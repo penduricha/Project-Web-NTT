@@ -7,7 +7,7 @@ import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
 import TextInvalid from "@/components/span/TextInvalid.vue";
 import PasswordManagement from "@/manage-data/PasswordManagement.js";
 import StudentLocalStorage from "@/local-storage/StudentLocalStorage.js";
-import { StudentAccount } from "@/models/StudentAccount.js";
+import {StudentAccount} from "@/models/StudentAccount.js";
 import StudentDao from "@/daos/StudentDao.js";
 import Footer from "@/components/footer/Footer.vue";
 import Header from "@/components/header/Header.vue";
@@ -84,10 +84,8 @@ export default {
 
     setInputStudentID(event) {
       // Chỉ cho phép các ký tự số
-      const numericValue = event.target.value.replace(/[^0-9]/g, '');
-  
       // Gán lại giá trị cho biến studentID
-      this.studentID = numericValue;
+      this.studentID = event.target.value.replace(/[^0-9]/g, '');
 
       if (!this.studentID) {
         this.validateLogin = null;
@@ -129,7 +127,7 @@ export default {
         // Delay the reload to ensure the navigation is completed
         // Adjust the timeout as needed
         setTimeout(() => {
-           window.location.reload();
+           //window.location.reload();
         }, 50);
       }).catch((error) => {
         console.error('Error navigating :', error);
@@ -258,8 +256,7 @@ export default {
           <input type="text" class="form-control" 
             id="floatingInputStudentID" 
             placeholder="Mã sinh viên (nhập số)"
-            @input="setInputStudentID" 
-            @keypress="isNumber($event)"
+            @input="setInputStudentID"
             v-model="studentID" maxlength="10">
           <label for="floatingInputStudentID">Mã sinh viên (nhập số)</label>
         </div>

@@ -3,9 +3,10 @@ import './information-page.scss';
 import RouterManagement from "@/routers/RouterManagement.js";
 import Header from "../../components/header/Header.vue";
 import Footer from "../../components/footer/Footer.vue";
-import CardAccountNav from "./card-account-nav/CardAccountNav.vue";
+
 import './card-account-nav/card-account-nav.scss';
 import '../../assets/main-scss/theme-color.scss';
+import CardAccountNav from "@/pages/information-page/card-account-nav/CardAccountNav.vue";
 
 export default {
   name: "InformationPage",

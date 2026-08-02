@@ -1,152 +1,127 @@
 export default class StudentLocalStorage {
+    // Định nghĩa các key cố định dưới dạng static readonly (hoặc hằng số)
+    static STORAGE_KEYS = {
+        STUDENT: 'studentLocalStorage',
+        STUDENT_ID: 'studentIDLocalStorage',
+        REMEMBER_LOGIN: 'studentRememberLogin'
+    };
 
-    _studentLocalStorageName;
-    _studentIDLocalStorageName;
-    _studentRememberLoginName;
-
-    getStudentIDLocalStorageName() {
-        return this._studentIDLocalStorageName;
-    }
-
-    setStudentIDLocalStorageName(studentIDLocalStorageName) {
-        this._studentIDLocalStorageName = studentIDLocalStorageName;
-    }
-
-    getStudentLocalStorageName() {
-        return this._studentLocalStorageName;
-    }
-
-    setStudentLocalStorageName(value) {
-        this._studentLocalStorageName = value;
-    }
-
-    getStudentRememberLoginName() {
-        return this._studentRememberLoginName;
-    }
-
-    setStudentRememberLoginName(value) {
-        this._studentRememberLoginName = value;
-    }
-
-    constructor() {
-        this.setStudentLocalStorageName('studentLocalStorage');
-        this.setStudentRememberLoginName('studentRememberLogin');
-        this.setStudentIDLocalStorageName('studentIDLocalStorage')
-    }
-
+    /**
+     * Lưu thông tin student vào localStorage
+     * @param {Object} student
+     */
     setStudentLocalStorage(student) {
-        if (student) {
-            localStorage.setItem(
-                this.getStudentLocalStorageName()
-                , JSON.stringify(student)
-            );
-        } else {
-            console.error('Student is empty.');
+        if (!student) {
+            console.error('Student object is empty.');
+            return;
         }
+        localStorage.setItem(StudentLocalStorage.STORAGE_KEYS.STUDENT, JSON.stringify(student));
     }
 
+    /**
+     * Lấy thông tin student từ localStorage
+     * @returns {Object|null}
+     */
     getStudentLocalStorage() {
-        let student = localStorage
-            .getItem(
-                this.getStudentLocalStorageName()
-            );
-        if (student) {
-            return JSON.parse(student);
-        } else {
-            console.error('Student local storage is empty.');
-        }
-    }
-
-    getStudentID_From_LocalStorage() {
-        let student = localStorage.getItem(
-            this.getStudentLocalStorageName()
-        );
-        if (student) {
-            let studentObject = JSON.parse(student);
-            return studentObject.studentID || null;
-        } else {
-            console.error('Student local storage is empty.');
-        }
-    }
-
-    removeStudentLocalStorage() {
-        let student = localStorage.getItem(
-            this.getStudentLocalStorageName()
-        );
-        if (student) {
-            localStorage.removeItem(
-                this.getStudentLocalStorageName()
-            );
-        } else {
-            console.error('Student local storage is empty.');
-        }
-    }
-
-    saveLocalStorageRememberMe(studentID, password) {
-        if(studentID && password) {
-            const student = {
-                studentID: studentID,
-                password: password,
-            };
-            localStorage.setItem(
-                this.getStudentRememberLoginName(),
-                JSON.stringify(student)
-            );
-        }  else {
-            console.error('Student id or password is null.');
-        }
-    }
-
-    getLocalStorageRememberMe() {
-        const studentRemember = localStorage.getItem(
-            this.getStudentRememberLoginName());
-        return studentRemember ? JSON.parse(studentRemember) : {};
-    }
-
-    removeLocalStorageRememberMe() {
-        const studentRemember = localStorage.getItem(
-            this.getStudentRememberLoginName());
-        if(studentRemember) {
-            localStorage.removeItem(
-                this.getStudentRememberLoginName()
-            );
-        }
-    }
-
-    //save studentID
-    setStudentIDToLocalStorage(studentID) {
-        if (studentID) {
-            localStorage.setItem(
-                this.getStudentIDLocalStorageName()
-                , studentID
-            );
-        } else {
-            console.error('Student ID is empty.');
-        }
-    }
-
-    getStudentID_From_LocalStorage_StudentID() {
-        let studentID = localStorage.getItem(
-            this.getStudentIDLocalStorageName()
-        );
-        if (studentID) {
-            return studentID;
-        } else {
-            console.error('Student ID local storage is empty.');
+        const student = localStorage.getItem(StudentLocalStorage.STORAGE_KEYS.STUDENT);
+        if (!student) {
+            console.warn('Student local storage is empty.');
             return null;
         }
+        return JSON.parse(student);
     }
 
-    removeStudentIDFromLocalStorage() {
-        let student = localStorage.getItem(
-            this.getStudentIDLocalStorageName()
-        );
-        if (student) {
-            localStorage.removeItem(
-                this.getStudentIDLocalStorageName()
-            );
+    /**
+     * Lấy studentID từ trong object student đã lưu
+     * @returns {string|null}
+     */
+    getStudentID_From_LocalStorage() {
+        const student = this.getStudentLocalStorage();
+        return student?.studentID || null;
+    }
+
+    /**
+     * Xóa thông tin student khỏi localStorage
+     */
+    removeStudentLocalStorage() {
+        const key = StudentLocalStorage.STORAGE_KEYS.STUDENT;
+        if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
         } else {
-            console.error('Student ID local storage is empty.');
+            console.warn('Student local storage is already empty.');
+        }
+    }
+
+    /**
+     * Lưu thông tin Remember Me (studentID & password)
+     * @param {string} studentID
+     * @param {string} password
+     */
+    saveLocalStorageRememberMe(studentID, password) {
+        if (!studentID || !password) {
+            console.error('Student ID or password is null.');
+            return;
+        }
+        const credentials = { studentID, password };
+        localStorage.setItem(
+            StudentLocalStorage.STORAGE_KEYS.REMEMBER_LOGIN,
+            JSON.stringify(credentials)
+        );
+    }
+
+    /**
+     * Lấy thông tin Remember Me
+     * @returns {Object}
+     */
+    getLocalStorageRememberMe() {
+        const data = localStorage.getItem(StudentLocalStorage.STORAGE_KEYS.REMEMBER_LOGIN);
+        return data ? JSON.parse(data) : {};
+    }
+
+    /**
+     * Xóa thông tin Remember Me
+     */
+    removeLocalStorageRememberMe() {
+        const key = StudentLocalStorage.STORAGE_KEYS.REMEMBER_LOGIN;
+        if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+        }
+    }
+
+    /**
+     * Lưu riêng studentID vào localStorage
+     * @param {string} studentID
+     */
+    setStudentIDToLocalStorage(studentID) {
+        if (!studentID) {
+            console.error('Student ID is empty.');
+            return;
+        }
+        localStorage.setItem(StudentLocalStorage.STORAGE_KEYS.STUDENT_ID, studentID);
+    }
+
+    /**
+     * Lấy riêng studentID đã lưu độc lập
+     * @returns {string|null}
+     */
+    getStudentID_From_LocalStorage_StudentID() {
+        const studentID = localStorage.getItem(StudentLocalStorage.STORAGE_KEYS.STUDENT_ID);
+        if (!studentID) {
+            console.warn('Student ID local storage is empty.');
+            return null;
+        }
+        return studentID;
+    }
+
+    /**
+     * Xóa riêng studentID khỏi localStorage
+     */
+    removeStudentIDFromLocalStorage() {
+        const key = StudentLocalStorage.STORAGE_KEYS.STUDENT_ID;
+        if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+        } else {
+            console.warn('Student ID local storage is already empty.');
         }
     }
 }
