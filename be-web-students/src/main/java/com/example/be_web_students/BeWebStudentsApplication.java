@@ -1,0 +1,19 @@
+package com.example.be_web_students;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+
+@SpringBootApplication
+@EnableJpaRepositories(basePackages = "com.example.be_web_students.repository.jpa")
+@EnableRedisRepositories(basePackages = "com.example.be_web_students.repository.cached")
+@EntityScan(basePackages = "com.example.be_web_students.model.jpa")
+public class BeWebStudentsApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(BeWebStudentsApplication.class, args);
+	}
+
+}

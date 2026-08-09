@@ -1,0 +1,3 @@
+create database university-ntt;
+
+Use Bcrypt Hash to hash password

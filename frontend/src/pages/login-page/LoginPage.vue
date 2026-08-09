@@ -247,13 +247,13 @@ export default {
 </script>
 
 <template>
-  <div class="container-page-login">
-    <Header />
-    <section class="container-form-login-page">
+  <form class="container-page-login" @submit.prevent="handleLoginEvent">
+    <Header/>
+    <section class="container-form-login-page" >
       <div class="form-login" :class="['event-form-login', setDisableForm]">
         <h4 class="title-login">ĐĂNG NHẬP</h4>
         <div class="form-floating mb-3 style-input-login">
-          <input type="text" class="form-control" 
+          <input type="text" class="form-control border-radius-zero"
             id="floatingInputStudentID" 
             placeholder="Mã sinh viên (nhập số)"
             @input="setInputStudentID"
@@ -261,7 +261,7 @@ export default {
           <label for="floatingInputStudentID">Mã sinh viên (nhập số)</label>
         </div>
         <div class="form-floating mb-3 style-input-login">
-          <input type="password" class="form-control" id="floatingInputPassword" placeholder="Mật khẩu"
+          <input type="password" class="form-control border-radius-zero" id="floatingInputPassword" placeholder="Mật khẩu"
             @input="setInputPassword" v-model="password" @paste="preventPaste($event)" maxlength="20">
           <label for="floatingInputPassword">Mật khẩu</label>
         </div>
@@ -283,7 +283,7 @@ export default {
       </div>
     </section>
     <Footer/>
-  </div>
+  </form>
 
 </template>
 
@@ -293,4 +293,11 @@ export default {
 //   flex-direction: column;
 //   justify-content: space-between;
 // }
+//.container-page-login {
+//  border: solid;
+//}
+
+.border-radius-zero {
+  border-radius: 0;
+}
 </style>
