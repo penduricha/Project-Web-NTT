@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "student_tokens", timeToLive = 86400)
+@RedisHash(value = "student_jwt_cache", timeToLive = 86400)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 //Added 'org.hibernate.orm:hibernate-jcache' to gradle
@@ -32,7 +32,6 @@ public class StudentJwtCache implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Indexed
     @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studentJwtCacheId;
@@ -41,8 +40,8 @@ public class StudentJwtCache implements Serializable {
     private Long studentId;
 
     @Column(unique = true)
+    @Indexed
     private String jwtToken;
 
-    @Indexed
     private LocalDateTime dateLogin;
 }

@@ -21,12 +21,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis");
 	implementation("org.springframework.boot:spring-boot-starter-session-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.hibernate.orm:hibernate-jcache");
 	implementation("org.ehcache:ehcache:3.10.8:jakarta")
-//	implementation("io.github.cdimascio:java-dotenv:5.2.2")
+	implementation("io.github.cdimascio:java-dotenv:5.2.2")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
