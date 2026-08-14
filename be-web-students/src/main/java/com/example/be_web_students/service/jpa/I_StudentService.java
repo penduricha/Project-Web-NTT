@@ -7,4 +7,5 @@ public interface I_StudentService {
 
     public boolean addStudent(Student student, Long courseId) throws JpaSystemException;
 
+    public Object loginStudent(Long studentId, String password) throws Exception;
 }

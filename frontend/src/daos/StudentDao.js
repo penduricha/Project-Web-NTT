@@ -1,4 +1,5 @@
 export default class StudentDao {
+
     static async getStudentIDAndPassword(studentID) {
         if(studentID === '21107601')
             return {
@@ -9,4 +10,5 @@ export default class StudentDao {
         
         return null;
     }
+
 }

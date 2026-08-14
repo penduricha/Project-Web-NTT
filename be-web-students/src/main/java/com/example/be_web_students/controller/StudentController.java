@@ -1,7 +1,7 @@
 package com.example.be_web_students.controller;
 
 import com.example.be_web_students.model.jpa.Student;
-import com.example.be_web_students.service.impl.StudentServiceImpl;
+import com.example.be_web_students.service.jpa.impl.StudentServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

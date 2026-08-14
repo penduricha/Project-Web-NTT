@@ -1,7 +1,7 @@
 package com.example.be_web_students.controller;
 
 import com.example.be_web_students.model.jpa.Course;
-import com.example.be_web_students.service.impl.CourseServiceImpl;
+import com.example.be_web_students.service.jpa.impl.CourseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

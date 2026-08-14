@@ -1,4 +1,4 @@
-package com.example.be_web_students.service.impl;
+package com.example.be_web_students.service.jpa.impl;
 
 import com.example.be_web_students.model.jpa.Course;
 import com.example.be_web_students.service.I_CourseService;

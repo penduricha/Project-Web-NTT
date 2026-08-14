@@ -8,6 +8,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -31,6 +32,11 @@ public class DataInitializer {
         this.jdbcTemplate = jdbcTemplate;
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
+    }
+
+    public String generateHash(String rawText, int strength) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(strength);
+        return encoder.encode(rawText);
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -112,7 +118,7 @@ public class DataInitializer {
 //            }
                 Student student1 = new Student();
                 student1.setStudentId(2500021775L);
-                student1.setPassword("$2a$12$FMP1aYy2CF1mxy5vY1SCTOmhac3BWH9odgC0gY1TcHgIc6pyi3mk.");
+                student1.setPassword(generateHash("1234",10));
                 student1.setStudentName("Từ Quang Nhật");
                 student1.setGender(true);
                 student1.setClazzName("25MTH1B");
@@ -124,7 +130,7 @@ public class DataInitializer {
 
                 Student student2 = new Student();
                 student2.setStudentId(2500021773L);
-                student2.setPassword("$2a$12$kzkGQECR4/3miEBvmAnoa.ffuBZYNdaX9vtzMw3.ucVDi2S1vfLoO");
+                student2.setPassword(generateHash("1234",10));
                 student2.setStudentName("Lương Lưu Thanh Tú");
                 student2.setGender(true);
                 student2.setClazzName("25MTH1B");

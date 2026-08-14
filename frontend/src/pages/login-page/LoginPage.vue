@@ -163,6 +163,8 @@ export default {
         let studentFetched = await this.fetchAccountStudent(this.studentID.trim());
         console.log('Student fetched:', studentFetched);
 
+        //Call logic Login
+
         if (!studentFetched) {
           this.validateLogin = 'Mã số sinh viên hoặc mật khẩu không đúng.';
           this.stopLoadButtonLogin();
@@ -179,6 +181,7 @@ export default {
             }
             //save student id to local storage
             console.log('Login successfully');
+            //dang nhap thanh cong, dieu huong qua
             this.navigateToRegisterCoursesPage();
           }
           this.stopLoadButtonLogin();
