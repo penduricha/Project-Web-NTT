@@ -6,22 +6,27 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
+    // Khóa bí mật phải có độ dài tối thiểu 32 ký tự (256 bits) đối với HS256
+    private static final String JWT_SECRET = "messi_vo_dich_world_cup_ucl_2022_and_champions_league";
+
+    // Thời gian hết hạn token (Ví dụ: 1 ngày = 86400000 ms)
+    private static final long JWT_EXPIRATION = 86400000L;
+
     // Chuyển đổi chuỗi secret thành SecretKey chuẩn cho JJWT 0.12.x
     private SecretKey getSigningKey() {
-        // Khóa bí mật dùng để ký token (Độ dài tối thiểu phải từ 256 bits / 32 ký tự đối với thuật toán HS256)
-        String JWT_SECRET = "messi_vo_dich_world_cup_ucl";
-        return Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
+        byte[] keyBytes = JWT_SECRET.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // Tạo JWT từ studentId
     public String generateToken(Long studentId) {
         Date now = new Date();
-        long JWT_EXPIRATION = 86400000L;
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
 
         return Jwts.builder()

@@ -18,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 //Gradle cho security
 // Spring Boot Starter Security (Bao gồm BCryptPasswordEncoder)
@@ -41,6 +43,8 @@ public class StudentServiceImpl implements I_StudentService {
     private final StudentJwtCacheServiceImpl studentJwtCacheService;
 
     private final StudentJwtRefreshTokenServiceImpl studentJwtRefreshTokenService;
+
+    private final int strengthPassword = 12;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -79,53 +83,88 @@ public class StudentServiceImpl implements I_StudentService {
 
     @Override
     public Object loginStudent(Long studentId, String password) throws RedisBusyException, JpaSystemException {
+        //    {
+        //        "success": false,
+        //            "message": "Mã sinh viên hoặc mật khẩu không chính xác",
+        //            "data": null
+        //    }
 
-        String passwordEncoder = generateHash(password, 10);
 
+        // 1. Tìm sinh viên theo ID
         Student studentFound = studentRepository.findStudentByStudentId(studentId);
+        if (studentFound == null) {
+            Map<String, Object> responseNotFound = new HashMap<>();
+            responseNotFound.put("success", false);
+            responseNotFound.put("message", "Student not found.");
+            responseNotFound.put("data", null);
+            return responseNotFound;
+        }
 
-        if(studentFound != null) {
-            boolean isMatch = studentFound.getPassword().trim().matches(passwordEncoder.trim());
-            if(isMatch) {
-                //save JWT
-                String jwtToken = jwtTokenProvider.generateToken(studentFound.getStudentId());
+        // 2. Kiểm tra mật khẩu chuẩn bảo mật (Ví dụ dùng Spring Security PasswordEncoder hoặc thư viện BCrypt)
+        // Lưu ý: Không dùng hàm generateHash để so sánh trực tiếp vì hash sinh ra mỗi lần là khác nhau do salt.
+        boolean isMatch = comparePasswordBcrypt(password, studentFound.getPassword(), strengthPassword);
+        if (!isMatch) {
+            Map<String, Object> responsePasswordNotMatched = new HashMap<>();
+            responsePasswordNotMatched.put("success", false);
+            responsePasswordNotMatched.put("message", "Password not matched.");
+            responsePasswordNotMatched.put("data", null);
+            return responsePasswordNotMatched;
+        }
 
-                StudentJwtCache studentJwtCache = new StudentJwtCache();
-                studentJwtCache.setJwtToken(jwtToken);
-                studentJwtCache.setStudentId(studentId);
-                studentJwtCache.setDateLogin(LocalDateTime.now());
+        // 3. Tạo JWT Token
+        String jwtToken = jwtTokenProvider.generateToken(studentFound.getStudentId());
 
-                boolean studentJwtCacheServiceFound =
-                        studentJwtCacheService.findStudentJwtCacheByJwtToken(jwtToken);
+        if (studentJwtCacheService.findStudentJwtCacheByJwtToken(jwtToken)) {
+            jwtToken = jwtTokenProvider.generateToken(studentFound.getStudentId());
+        }
 
-                while (studentJwtCacheServiceFound) {
-                    jwtToken = jwtTokenProvider.generateToken(studentFound.getStudentId());
-                    studentJwtCache.setJwtToken(jwtToken);
-                    studentJwtCacheServiceFound =
-                            studentJwtCacheService.findStudentJwtCacheByJwtToken(jwtToken);
-                    if(!studentJwtCacheServiceFound) break;
-                }
+        LocalDateTime now = LocalDateTime.now();
 
-                StudentJwtRefreshToken studentJwtRefreshToken = new StudentJwtRefreshToken();
-                studentJwtRefreshToken.setJwtToken(jwtToken);
-                studentJwtRefreshToken.setStudentId(studentId);
-                studentJwtRefreshToken.setDateLogin(LocalDateTime.now());
+        // 4. Lưu Cache
+        StudentJwtCache studentJwtCache = new StudentJwtCache();
+        studentJwtCache.setJwtToken(jwtToken);
+        studentJwtCache.setStudentId(studentId);
+        studentJwtCache.setDateLogin(now);
 
-                if(studentJwtRefreshTokenService.addStudentJwtRefreshToken(studentJwtRefreshToken)) {
+        // 5. Lưu Refresh Token và trả về kết quả
+        StudentJwtRefreshToken studentJwtRefreshToken = new StudentJwtRefreshToken();
+        studentJwtRefreshToken.setJwtToken(jwtToken);
+        studentJwtRefreshToken.setStudentId(studentId);
+        studentJwtRefreshToken.setDateLogin(now);
 
-                    return true;
-                }
-                return false;
+        //Login successfully
+        //        {
+        //            "success": true,
+        //                "message": "Đăng nhập thành công",
+        //                "data": {
+        //            "studentId": 2500021772,
+        //                    "jwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        //        }
+        //        }
+        Map<String, Object> responseSuccess = new HashMap<>();
 
-            } else {
-                return false;
+        if(studentJwtCacheService.addStudentJwtCache(studentJwtCache)) {
+            if(studentJwtRefreshTokenService.addStudentJwtRefreshToken(studentJwtRefreshToken)) {
+
+                responseSuccess.put("success", true);
+                responseSuccess.put("massage", "Login successfully.");
+
+                Map<String, Object> responseSuccessData= new HashMap<>();
+                responseSuccessData.put("studentId", studentJwtCache.getStudentId());
+                responseSuccessData.put("jwtToken", studentJwtCache.getJwtToken());
+                responseSuccess.put("data", responseSuccessData);
             }
         }
-        return false;
+        return responseSuccess;
     }
 
     public String generateHash(String rawText, int strength) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(strength);
         return encoder.encode(rawText);
+    }
+
+    public boolean comparePasswordBcrypt(String rawText, String hashedPassword, int strength) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(strength);
+        return encoder.matches(rawText, hashedPassword);
     }
 }

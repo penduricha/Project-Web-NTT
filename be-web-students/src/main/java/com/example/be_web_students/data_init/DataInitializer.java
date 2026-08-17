@@ -118,7 +118,7 @@ public class DataInitializer {
 //            }
                 Student student1 = new Student();
                 student1.setStudentId(2500021775L);
-                student1.setPassword(generateHash("1234",10));
+                student1.setPassword(generateHash("1234",12));
                 student1.setStudentName("Từ Quang Nhật");
                 student1.setGender(true);
                 student1.setClazzName("25MTH1B");
@@ -130,7 +130,7 @@ public class DataInitializer {
 
                 Student student2 = new Student();
                 student2.setStudentId(2500021773L);
-                student2.setPassword(generateHash("1234",10));
+                student2.setPassword(generateHash("1234",12));
                 student2.setStudentName("Lương Lưu Thanh Tú");
                 student2.setGender(true);
                 student2.setClazzName("25MTH1B");

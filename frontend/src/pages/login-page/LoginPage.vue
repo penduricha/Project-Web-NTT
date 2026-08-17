@@ -156,6 +156,7 @@ export default {
       } else {
         this.loadButtonLogin();
 
+        //call api
         const passwordManagement = new PasswordManagement(this.password.trim());
         let passwordHashed = await passwordManagement.sha512Hash();
         console.log('Password hashed:', passwordHashed);
@@ -291,11 +292,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-// .container-page-login {
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: space-between;
-// }
+
 //.container-page-login {
 //  border: solid;
 //}

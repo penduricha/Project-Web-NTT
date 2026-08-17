@@ -1,0 +1,7 @@
+create database university-ntt;
+
+Use Bcrypt Hash to hash password.
+
+Tao 2 bang ghi redis cache luu jwt.
+
+1 ngay va 7 ngay.

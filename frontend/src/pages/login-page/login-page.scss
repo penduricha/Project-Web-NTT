@@ -1,7 +1,13 @@
 /* style chung */
+.container-page-login {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .container-form-login-page {
   width: 100%;
-  height: 80vh;
+  min-height: 90vh;
   display: flex;
   justify-content: center;
   align-items: center;
