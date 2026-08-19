@@ -132,8 +132,8 @@ spring:
       hibernate:
         # --- CẤU HÌNH HIBERNATE SECOND-LEVEL CACHE VỚI REDIS ---
         cache:
-          use_second_level_cache: true
-          use_query_cache: true
+          use_second_level_cache: false
+          use_query_cache: false
           region:
             factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
           javax:

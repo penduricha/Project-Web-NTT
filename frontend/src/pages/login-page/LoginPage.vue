@@ -38,7 +38,7 @@ export default {
 
   data() {
     return {
-      studentID: null,
+      studentId: null,
       password: null,
       validateLogin: "",
       rememberMe: false,
@@ -82,12 +82,12 @@ export default {
       }
     },
 
-    setInputStudentID(event) {
+    setInputStudentId(event) {
       // Chỉ cho phép các ký tự số
-      // Gán lại giá trị cho biến studentID
-      this.studentID = event.target.value.replace(/[^0-9]/g, '');
+      // Gán lại giá trị cho biến studentId
+      this.studentId = event.target.value.replace(/[^0-9]/g, '');
 
-      if (!this.studentID) {
+      if (!this.studentId) {
         this.validateLogin = null;
       } else {
         this.validateLogin = null;
@@ -102,9 +102,9 @@ export default {
       }
     },
 
-    async fetchAccountStudent(studentID, password) {
+    async fetchAccountStudent(studentId, password) {
       return await StudentDao
-        .getStudentIDAndPassword(studentID, password);
+        .getStudentIdAndPassword(studentId, password);
 
     },
 
@@ -117,7 +117,7 @@ export default {
       routerManagement.savePath_To_LocalStorage(routerPathToSave);
 
       //save student ID
-      studentLocalStorage.setStudentIDToLocalStorage(this.studentID);
+      studentLocalStorage.setStudentIdToLocalStorage(this.studentId);
 
       this.$router.replace({
         path: routerPathToSave,
@@ -150,7 +150,7 @@ export default {
     },
 
     async handleLoginEvent() {
-      const nullFieldInput = !this.studentID || !this.password;
+      const nullFieldInput = !this.studentId || !this.password;
       if (nullFieldInput) {
         this.validateLogin = 'Vui lòng nhập đầy đủ thông tin.';
       } else {
@@ -161,7 +161,7 @@ export default {
         let passwordHashed = await passwordManagement.sha512Hash();
         console.log('Password hashed:', passwordHashed);
 
-        let studentFetched = await this.fetchAccountStudent(this.studentID.trim());
+        let studentFetched = await this.fetchAccountStudent(this.studentId.trim());
         console.log('Student fetched:', studentFetched);
 
         //Call logic Login
@@ -198,10 +198,10 @@ export default {
     },
 
     saveDataInputToLocalStorage() {
-      if (this.studentID && this.password) {
+      if (this.studentId && this.password) {
         const studentLocalStorage = new StudentLocalStorage();
         studentLocalStorage.saveLocalStorageRememberMe(
-          this.studentID.trim(),
+          this.studentId.trim(),
           this.password.trim());
       }
     },
@@ -225,11 +225,11 @@ export default {
 
     setDataInputFromLocalStorage(studentFetched) {
       if (studentFetched) {
-        let studentID = studentFetched.studentID;
+        let studentId = studentFetched.studentId;
         let password = studentFetched.password;
-        const studentAccount = new StudentAccount(studentID, password);
+        const studentAccount = new StudentAccount(studentId, password);
         console.log(studentAccount.toString());
-        this.studentID = studentAccount.getStudentID();
+        this.studentId = studentAccount.getStudentId();
         this.password = studentAccount.getPassword();
       }
     }
@@ -258,11 +258,11 @@ export default {
         <h4 class="title-login">ĐĂNG NHẬP</h4>
         <div class="form-floating mb-3 style-input-login">
           <input type="text" class="form-control border-radius-zero"
-            id="floatingInputStudentID" 
+            id="floatingInputStudentId" 
             placeholder="Mã sinh viên (nhập số)"
-            @input="setInputStudentID"
-            v-model="studentID" maxlength="10">
-          <label for="floatingInputStudentID">Mã sinh viên (nhập số)</label>
+            @input="setInputStudentId"
+            v-model="studentId" maxlength="10">
+          <label for="floatingInputStudentId">Mã sinh viên (nhập số)</label>
         </div>
         <div class="form-floating mb-3 style-input-login">
           <input type="password" class="form-control border-radius-zero" id="floatingInputPassword" placeholder="Mật khẩu"

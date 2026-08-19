@@ -2,7 +2,7 @@ package com.example.desktop_java_swing.data_init;
 
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DataInitializer {
 
 //    private final JdbcTemplate jdbcTemplate;
