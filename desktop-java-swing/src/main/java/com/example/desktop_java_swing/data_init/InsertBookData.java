@@ -41,7 +41,6 @@ public class InsertBookData {
         try {
             Integer bookCount = jdbcTemplate.queryForObject("select count(*) from books", Integer.class);
             if(bookCount == 0) {
-
                 List<Book> bookList = getBookList();
                 bookRepository.saveAll(bookList);
             }

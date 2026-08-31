@@ -1,13 +1,13 @@
 export class StudentAccount {
-    _studentID;
+    _studentId;
     _password;
 
-    getStudentID(){
-        return this._studentID;
+    getStudentId(){
+        return this._studentId;
     }
 
-    setStudentID(studentID) {
-        this._studentID = studentID;
+    setStudentId(studentId) {
+        this._studentId = studentId;
     }
 
     getPassword() {
@@ -18,12 +18,12 @@ export class StudentAccount {
         this._password = password;
     }
 
-    constructor(studentID, password) {
-        this.setStudentID(studentID);
+    constructor(studentId, password) {
+        this.setStudentId(studentId);
         this.setPassword(password);
     }
 
     toString() {
-        return `Student account:[studentID: ${this._studentID}, password: ${this._password}]`;
+        return `Student account:[studentId: ${this._studentId}, password: ${this._password}]`;
     }
 }

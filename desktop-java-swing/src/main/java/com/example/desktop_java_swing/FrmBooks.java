@@ -21,7 +21,7 @@ public class FrmBooks extends JFrame implements ActionListener {
     private final JTextField txtBookID, txtBookName, txtAuthor;
     private final JSpinner quantity;
     private final JButton btnAdd, btnUpdate, btnDelete, btnReset;
-    private final JComboBox<String> cbGenre;
+    private final JComboBox<String> cbCategory;
     private final JTable table;
     private final DefaultTableModel tableModel;
 
@@ -53,8 +53,8 @@ public class FrmBooks extends JFrame implements ActionListener {
         pnlInput.add(txtBookName = new JTextField());
         pnlInput.add(new JLabel("Author:"));
         pnlInput.add(txtAuthor = new JTextField());
-        pnlInput.add(new JLabel("Genre:"));
-        pnlInput.add(cbGenre = new JComboBox<>(new String[]{"Fiction", "Non-fiction", "Comedy"}));
+        pnlInput.add(new JLabel("Category:"));
+        pnlInput.add(cbCategory = new JComboBox<>(new String[]{"Fiction", "Non-fiction", "Comedy"}));
         pnlInput.add(new JLabel("Quantity:"));
 
         // Cấu hình JSpinner > 0
@@ -138,7 +138,7 @@ public class FrmBooks extends JFrame implements ActionListener {
         txtBookID.setText(null);
         txtBookName.setText(null);
         txtAuthor.setText(null);
-        cbGenre.setSelectedIndex(0);
+        cbCategory.setSelectedIndex(0);
         quantity.setValue(1);
         getListFromDatabase();
     }
@@ -148,14 +148,15 @@ public class FrmBooks extends JFrame implements ActionListener {
         String bookID = tableModel.getValueAt(row, 0).toString();
         String name = tableModel.getValueAt(row, 1).toString();
         String author = tableModel.getValueAt(row, 2).toString();
-        String genre = tableModel.getValueAt(row, 3).toString();
+        String category = tableModel.getValueAt(row, 3).toString();
         int qty = Integer.parseInt(tableModel.getValueAt(row, 4).toString());
 
+        // Đưa dữ liệu lên các field
         // Đưa dữ liệu lên các field
         txtBookID.setText(bookID);
         txtBookName.setText(name);
         txtAuthor.setText(author);
-        cbGenre.setSelectedItem(genre);
+        cbCategory.setSelectedItem(category);
         quantity.setValue(qty);
     }
 
@@ -175,25 +176,36 @@ public class FrmBooks extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnAdd) {
-            Long bookId = Long.valueOf(txtBookID.getText());
+
+            String bookIdStr = txtBookID.getText();
             String title = txtBookName.getText();
             String author = txtAuthor.getText();
-            String category = (String) cbGenre.getSelectedItem();
+            String category = (String) cbCategory.getSelectedItem();
             int qty = (int) quantity.getValue();
 
-            Book bookToAdd = new Book();
-            bookToAdd.setBookId(bookId);
-            bookToAdd.setTitle(title);
-            bookToAdd.setAuthor(author);
-            bookToAdd.setCategory(category);
-            bookToAdd.setQuantity(qty);
-
-            if (bookService.addBook(bookToAdd)) {
-                resetGUI();
-            } else {
+            if(bookIdStr.trim().equalsIgnoreCase("") ||
+                    title.trim().equalsIgnoreCase("") ||
+                    author.trim().equalsIgnoreCase("")) {
                 JOptionPane.showMessageDialog(null,
-                        "Please check your input fields",
+                        "Please input full fields",
                         "Warning", JOptionPane.WARNING_MESSAGE);
+            } else {
+                Long bookId = Long.valueOf(bookIdStr);
+
+                Book bookToAdd = new Book();
+                bookToAdd.setBookId(bookId);
+                bookToAdd.setTitle(title);
+                bookToAdd.setAuthor(author);
+                bookToAdd.setCategory(category);
+                bookToAdd.setQuantity(qty);
+
+                if (bookService.addBook(bookToAdd)) {
+                    resetGUI();
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Please check your input fields",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                }
             }
         }
 
@@ -211,22 +223,30 @@ public class FrmBooks extends JFrame implements ActionListener {
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     String bookIdStr = tableModel.getValueAt(selectedRow, 0).toString();
-                    Long bookId = Long.valueOf(bookIdStr);
-
                     String title = txtBookName.getText();
                     String author = txtAuthor.getText();
-                    String category = (String) cbGenre.getSelectedItem();
+                    String category = (String) cbCategory.getSelectedItem();
                     int qty = (int) quantity.getValue();
 
-                    Book bookToUpdate = new Book();
-                    bookToUpdate.setBookId(bookId);
-                    bookToUpdate.setTitle(title);
-                    bookToUpdate.setAuthor(author);
-                    bookToUpdate.setCategory(category);
-                    bookToUpdate.setQuantity(qty);
+                    if(bookIdStr.trim().equalsIgnoreCase("") ||
+                            title.trim().equalsIgnoreCase("") ||
+                            author.trim().equalsIgnoreCase("")) {
+                        JOptionPane.showMessageDialog(null,
+                                "Please input full fields",
+                                "Warning", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        Long bookId = Long.valueOf(bookIdStr);
 
-                    if(bookService.updateBook(bookToUpdate)) {
-                        resetGUI();
+                        Book bookToUpdate = new Book();
+                        bookToUpdate.setBookId(bookId);
+                        bookToUpdate.setTitle(title);
+                        bookToUpdate.setAuthor(author);
+                        bookToUpdate.setCategory(category);
+                        bookToUpdate.setQuantity(qty);
+
+                        if(bookService.updateBook(bookToUpdate)) {
+                            resetGUI();
+                        }
                     }
                 }
             } else {

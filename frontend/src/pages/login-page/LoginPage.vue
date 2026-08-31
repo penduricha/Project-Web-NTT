@@ -104,7 +104,7 @@ export default {
 
     async fetchAccountStudent(studentId, password) {
       return await StudentDao
-        .getStudentIdAndPassword(studentId, password);
+        .getStudentIDAndPassword(studentId, password);
 
     },
 
@@ -117,7 +117,7 @@ export default {
       routerManagement.savePath_To_LocalStorage(routerPathToSave);
 
       //save student ID
-      studentLocalStorage.setStudentIdToLocalStorage(this.studentId);
+      studentLocalStorage.setStudentLocalStorage(this.studentId);
 
       this.$router.replace({
         path: routerPathToSave,
