@@ -18,5 +18,4 @@ public class BeWebStudentsApplication {
 		dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(BeWebStudentsApplication.class, args);
 	}
-
 }

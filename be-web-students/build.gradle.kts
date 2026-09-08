@@ -33,7 +33,7 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 	testImplementation("org.springframework.security:spring-security-test")
-	implementation("io.github.cdimascio:java-dotenv:5.2.2")
+	implementation("io.github.cdimascio:dotenv-java:3.1.0")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")

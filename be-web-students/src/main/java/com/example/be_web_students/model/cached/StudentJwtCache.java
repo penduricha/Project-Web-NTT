@@ -3,11 +3,12 @@ package com.example.be_web_students.model.cached;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.index.*;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.*;
 
 
 import java.io.Serial;
@@ -20,8 +21,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-//Time to live records 86400s
-@RedisHash(value = "student_jwt_caches", timeToLive = 86400)
+@RedisHash(value = "student_jwt_caches", timeToLive = 300)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 //Added 'org.hibernate.orm:hibernate-jcache' to gradle

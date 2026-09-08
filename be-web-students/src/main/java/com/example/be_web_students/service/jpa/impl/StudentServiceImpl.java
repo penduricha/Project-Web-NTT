@@ -1,7 +1,7 @@
 package com.example.be_web_students.service.jpa.impl;
 
 import com.example.be_web_students.model.cached.StudentJwtCache;
-import com.example.be_web_students.model.cached.StudentJwtRefreshToken;
+import com.example.be_web_students.model.cached.StudentRefreshToken;
 import com.example.be_web_students.model.jpa.Course;
 import com.example.be_web_students.model.jpa.Student;
 import com.example.be_web_students.security.jwt.JwtTokenProvider;
@@ -10,7 +10,6 @@ import com.example.be_web_students.service.I_StudentService;
 import com.example.be_web_students.repository.jpa.CourseRepository;
 import com.example.be_web_students.repository.jpa.StudentRepository;
 import com.example.be_web_students.service.cached.impl.StudentJwtCacheServiceImpl;
-import com.example.be_web_students.service.cached.impl.StudentJwtRefreshTokenServiceImpl;
 import io.lettuce.core.RedisBusyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -42,19 +41,16 @@ public class StudentServiceImpl implements I_StudentService {
 
     private final StudentJwtCacheServiceImpl studentJwtCacheService;
 
-    private final StudentJwtRefreshTokenServiceImpl studentJwtRefreshTokenService;
-
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
 //    @Autowired
 //    private RedisTemplate<String, String> redisTemplate;
 
-    public StudentServiceImpl(StudentRepository studentRepository, CourseRepository courseRepository, StudentJwtCacheServiceImpl studentJwtCacheService, StudentJwtRefreshTokenServiceImpl studentJwtRefreshTokenService) {
+    public StudentServiceImpl(StudentRepository studentRepository, CourseRepository courseRepository, StudentJwtCacheServiceImpl studentJwtCacheService) {
         this.studentRepository = studentRepository;
         this.courseRepository = courseRepository;
         this.studentJwtCacheService = studentJwtCacheService;
-        this.studentJwtRefreshTokenService = studentJwtRefreshTokenService;
     }
 
     @Override
@@ -131,12 +127,6 @@ public class StudentServiceImpl implements I_StudentService {
         studentJwtCache.setStudentId(studentId);
         studentJwtCache.setDateLogin(now);
 
-        // 5. Lưu Refresh Token và trả về kết quả
-        StudentJwtRefreshToken studentJwtRefreshToken = new StudentJwtRefreshToken();
-        studentJwtRefreshToken.setJwtToken(jwtToken);
-        studentJwtRefreshToken.setStudentId(studentId);
-        studentJwtRefreshToken.setDateLogin(now);
-
         //Login successfully
         //        {
         //            "success": true,
@@ -149,11 +139,16 @@ public class StudentServiceImpl implements I_StudentService {
         Map<String, Object> responseSuccess = new HashMap<>();
 
         if(studentJwtCacheService.addStudentJwtCache(studentJwtCache)) {
-            if(studentJwtRefreshTokenService.addStudentJwtRefreshToken(studentJwtRefreshToken)) {
+            StudentRefreshToken studentRefreshToken = new StudentRefreshToken();
+            studentRefreshToken.setJwtToken(jwtToken);
+            studentRefreshToken.setStudentId(studentId);
+            studentRefreshToken.setDateLogin(now);
 
+            System.out.println();
+
+            if(studentJwtCacheService.addStudentRefreshToken(studentRefreshToken)) {
                 responseSuccess.put("success", true);
                 responseSuccess.put("massage", "Login successfully.");
-
                 Map<String, Object> responseSuccessData= new HashMap<>();
                 responseSuccessData.put("studentId", studentJwtCache.getStudentId());
                 responseSuccessData.put("jwtToken", studentJwtCache.getJwtToken());

@@ -13,7 +13,8 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     // Khóa bí mật phải có độ dài tối thiểu 32 ký tự (256 bits) đối với HS256
-    private static final String JWT_SECRET = "messi_vo_dich_world_cup_ucl_2022_and_champions_league";
+    //private static final String JWT_SECRET = "x9K#mP$7vL2!nQ5@zW8*yR1&jF4^bC3(vT0)mN6+qX8=";
+    private static final String JWT_SECRET = "x9K#mP$7vL2!nQ5@zW8*yR1&jF4^bC3(vT0)mN6+qX8=";
 
     // Thời gian hết hạn token (Ví dụ: 1 ngày = 86400000 ms)
     private static final long JWT_EXPIRATION = 86400000L;
