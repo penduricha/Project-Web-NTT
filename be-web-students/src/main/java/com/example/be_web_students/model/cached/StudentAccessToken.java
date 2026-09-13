@@ -21,13 +21,13 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "student_jwt_caches", timeToLive = 300)
+@RedisHash(value = "student_access_tokens", timeToLive = 60)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 //Added 'org.hibernate.orm:hibernate-jcache' to gradle
 //implementation 'org.hibernate.orm:hibernate-jcache'
 //implementation
-public class StudentJwtCache implements Serializable {
+public class StudentAccessToken implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public class StudentJwtCache implements Serializable {
     @Id
     @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long studentJwtCacheId;
+    private Long studentAccessTokenId;
 
     // Khóa chính (Key trên Redis sẽ có dạng: student_tokens:studentId)
     private Long studentId;

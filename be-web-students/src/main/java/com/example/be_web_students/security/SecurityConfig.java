@@ -1,7 +1,12 @@
 package com.example.be_web_students.security;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,36 +19,72 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig  {
 
     /* ===================================================================================
      * TRƯỜNG HỢP 1: THOẢI MÁI (DEV / TEST NHANH)
      * - Không bắt buộc username/password hay token (Permit All mọi API)
      * - Cho phép MỌI Origin, Method, Header truy cập qua CORS
      * =================================================================================== */
+//    @Bean
+//    public SecurityFilterChain filterChainPermitAll(HttpSecurity http) throws RuntimeException {
+//        http
+//                .cors(cors -> cors.configurationSource(corsPermitAllSource()))
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll() // Cho phép tất cả API không cần xác thực
+//                );
+//
+//        return http.build();
+//    }
+
+    //@Bean
+//    private CorsConfigurationSource corsPermitAllSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        // Cho phép toàn bộ Domain/Origin gọi vào (dùng pattern để đi kèm allowCredentials)
+//        configuration.setAllowedOriginPatterns(List.of("*"));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("*"));
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
     @Bean
-    public SecurityFilterChain filterChainPermitAll(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsPermitAllSource()))
+                // 1. Kích hoạt CORS hỗ trợ Spring Security
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Cho phép tất cả API không cần xác thực
+                        // 2. BẮT BUỘC: Cho phép toàn bộ Request Preflight (OPTIONS) đi qua
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
     }
 
-    private CorsConfigurationSource corsPermitAllSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+    // 3. Khai báo Bean nguồn cấu hình CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-        // Cho phép toàn bộ Domain/Origin gọi vào (dùng pattern để đi kèm allowCredentials)
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        // Chấp nhận tất cả Origin từ Localhost (Bao gồm port 63342 của IDE)
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
 
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 

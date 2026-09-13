@@ -1,7 +1,7 @@
 package com.example.be_web_students.test_controller;
 
-import com.example.be_web_students.model.cached.StudentJwtCache;
-import com.example.be_web_students.repository.cached.StudentJwtCacheRepository;
+import com.example.be_web_students.model.cached.StudentAccessToken;
+import com.example.be_web_students.repository.cached.StudentAccessTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +13,11 @@ import java.util.Map;
 @RequestMapping("/cached/student-token")
 public class StudentJwtCacheController {
 
-    private final StudentJwtCacheRepository studentJwtCacheRepository;
+    private final StudentAccessTokenRepository studentAccessTokenRepository;
 
     @Autowired
-    public StudentJwtCacheController(StudentJwtCacheRepository studentJwtCacheRepository) {
-        this.studentJwtCacheRepository = studentJwtCacheRepository;
+    public StudentJwtCacheController(StudentAccessTokenRepository studentAccessTokenRepository) {
+        this.studentAccessTokenRepository = studentAccessTokenRepository;
     }
 
     @PostMapping
@@ -28,12 +28,12 @@ public class StudentJwtCacheController {
         String jwtToken = (String) studentJWTPost.get("jwtToken");
         LocalDateTime dateLogin = LocalDateTime.now();
 
-        StudentJwtCache studentJwtCache = new StudentJwtCache();
-        studentJwtCache.setStudentId(studentId);
-        studentJwtCache.setJwtToken(jwtToken);
-        studentJwtCache.setDateLogin(dateLogin);
+        StudentAccessToken studentAccessToken = new StudentAccessToken();
+        studentAccessToken.setStudentId(studentId);
+        studentAccessToken.setJwtToken(jwtToken);
+        studentAccessToken.setDateLogin(dateLogin);
 
-        studentJwtCacheRepository.save(studentJwtCache);
+        studentAccessTokenRepository.save(studentAccessToken);
         return ResponseEntity.ok().build();
     }
 
@@ -43,12 +43,12 @@ public class StudentJwtCacheController {
 
 //        System.out.println("JWT Token: "+jwtToken);
 
-        StudentJwtCache studentJwtCacheFound = studentJwtCacheRepository.findStudentJwtCacheByJwtToken(jwtToken);
+        StudentAccessToken studentAccessTokenFound = studentAccessTokenRepository.findStudentAccessTokenByJwtToken(jwtToken);
 
 //        System.out.println("Cached student: "+ studentJwtCacheFound);
 
-        if(studentJwtCacheFound != null) {
-            studentJwtCacheRepository.delete(studentJwtCacheFound);
+        if(studentAccessTokenFound != null) {
+            studentAccessTokenRepository.delete(studentAccessTokenFound);
             return ResponseEntity.ok("Đã xóa cache thành công cho JWT Token!");
         }
         return ResponseEntity.internalServerError().body("Lỗi khi xóa.");

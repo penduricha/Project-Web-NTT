@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "student_refresh_tokens", timeToLive = 5184000 )
+@RedisHash(value = "student_refresh_tokens", timeToLive = 2592000)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 //Added 'org.hibernate.orm:hibernate-jcache' to gradle
@@ -35,7 +35,7 @@ public class StudentRefreshToken implements Serializable {
     @Id
     @Column(unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long studentJwtCacheId;
+    private Long studentRefreshTokenId;
 
     // Khóa chính (Key trên Redis sẽ có dạng: student_tokens:studentId)
     private Long studentId;
