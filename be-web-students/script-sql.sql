@@ -1,1 +1,1 @@
-create database university_ntt;
+create database ntt;

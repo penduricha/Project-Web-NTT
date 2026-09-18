@@ -14,10 +14,10 @@ import 'vuetify/dist/vuetify-labs.min.css'
 
 // Plugins & Local Storage / Routers
 import CanvasJSChart from '@canvasjs/vue-charts'
-import StudentLocalStorage from "@/local-storage/StudentLocalStorage.js"
-import RouterManagement from "@/routers/RouterManagement.js"
-import routersBeforeLogin from "@/routers/routers-before-login.js"
-import routersAfterLogin from "@/routers/routers-after-login.js"
+import StudentLocalStorage from "@/local_storage/studentLocalStorage.js"
+import Router_management from "@/routers/router_management.js"
+import routersBeforeLogin from "@/routers/routers_before_login.js"
+import routersAfterLogin from "@/routers/routers_after_login.js"
 
 const app = createApp(App)
 app.use(CanvasJSChart)
@@ -45,7 +45,7 @@ function initApp(routes, targetPath) {
  * Xử lý logic điều hướng dựa trên trạng thái đăng nhập
  */
 function execute() {
-    const routerManagement = new RouterManagement()
+    const routerManagement = new Router_management()
     const studentLocalStorage = new StudentLocalStorage()
     const currentPath = window.location.pathname
 

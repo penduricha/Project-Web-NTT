@@ -2,13 +2,13 @@
 import './login-page.scss';
 import './form-event.scss';
 import '@/assets/main-scss/theme-color.scss';
-import RouterManagement from "@/routers/RouterManagement.js";
+import Router_management from "@/routers/router_management.js";
 import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
 import TextInvalid from "@/components/span/TextInvalid.vue";
-import PasswordManagement from "@/manage-data/PasswordManagement.js";
-import StudentLocalStorage from "@/local-storage/StudentLocalStorage.js";
-import {StudentAccount} from "@/models/StudentAccount.js";
-import StudentDao from "@/daos/StudentDao.js";
+import PasswordManagement from "@/manage-data/passwordManagement.js";
+import StudentLocalStorage from "@/local_storage/studentLocalStorage.js";
+import {StudentAccount} from "@/models/studentAccount.js";
+import StudentDAO from "@/daos/studentDAO.js";
 import Footer from "@/components/footer/Footer.vue";
 import Header from "@/components/header/Header.vue";
 // import '../../components/button/button-blue/button-blue.scss';
@@ -65,7 +65,7 @@ export default {
     },
 
     saveRouterPath(route) {
-      const routerManagement = new RouterManagement();
+      const routerManagement = new Router_management();
       routerManagement.savePath_To_SessionStorage(route);
     },
 
@@ -103,14 +103,14 @@ export default {
     },
 
     async fetchAccountStudent(studentId, password) {
-      return await StudentDao
+      return await StudentDAO
         .getStudentIDAndPassword(studentId, password);
 
     },
 
     navigateToRegisterCoursesPage() {
       //save path to local storage
-      const routerManagement = new RouterManagement();
+      const routerManagement = new Router_management();
       const studentLocalStorage = new StudentLocalStorage();
 
       const routerPathToSave = '/information-student';

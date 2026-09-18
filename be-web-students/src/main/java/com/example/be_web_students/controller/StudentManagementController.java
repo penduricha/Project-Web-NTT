@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/student")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class LoginStudentController {
+public class StudentManagementController {
 
     private final StudentServiceImpl studentService;
 
@@ -25,7 +25,7 @@ public class LoginStudentController {
     private JwtTokenProviderStudent jwtTokenProviderStudent;
 
 
-    public LoginStudentController(StudentServiceImpl studentService, StudentTokenServiceImpl studentTokenService) {
+    public StudentManagementController(StudentServiceImpl studentService, StudentTokenServiceImpl studentTokenService) {
         this.studentService = studentService;
         this.studentTokenService = studentTokenService;
     }
@@ -70,24 +70,28 @@ public class LoginStudentController {
         return ResponseEntity.ok(result);
     }
 
-//    @PostMapping("/auth/logout")
-//    public ResponseEntity<?> logoutStudent(@RequestBody Map<String, Object> studentRequestLogout) throws RuntimeException {
-//        Number studentIdInt = (Number) studentRequestLogin.get("studentId");
-//        Long studentId = studentIdInt != null ? studentIdInt.longValue() : null;
-//        String password = (String) studentRequestLogin.get("password");
-//
-//        LoginRequestStudentDTO loginRequestStudentDTO = new LoginRequestStudentDTO();
-//        loginRequestStudentDTO.setStudentId(studentId);
-//        loginRequestStudentDTO.setPassword(password);
-//
-//        // Gọi service trả về kết quả (ví dụ trả về Map, Token, hoặc DTO)
-//        Object result = studentService.loginStudent(
-//                loginRequestStudentDTO.getStudentId(),
-//                loginRequestStudentDTO.getPassword()
-//        );
-//
-//        return ResponseEntity.ok();
-//    }
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logoutStudent(@RequestBody Map<String, Object> studentRequestLogout) {
+
+        String accessToken = (String) studentRequestLogout.get("accessToken");
+        String refreshToken = (String) studentRequestLogout.get("refreshToken");
+
+        if(accessToken == null || refreshToken == null) {
+            Map<String, Object> responseNoToken = new HashMap<>();
+            responseNoToken.put("status", 401);
+            responseNoToken.put("message", "No access token or refresh token provided.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseNoToken);
+        }
+
+        studentTokenService.removeStudentAccessTokenByJwtToken(accessToken);
+        studentTokenService.removeStudentRefreshTokenByJwtToken(refreshToken);
+
+        Map<String, Object> responseReturn = new HashMap<>();
+        responseReturn.put("status", 200);
+        responseReturn.put("message", "Log out successfully.");
+
+        return ResponseEntity.ok(responseReturn);
+    }
 
     @GetMapping("/auth/login/auto/access-token")
     public ResponseEntity<?> loginStudentAutoBySendAccessToken(
@@ -106,7 +110,7 @@ public class LoginStudentController {
         String jwtToken = authHeader.substring(7);
 
         // 3. Verify chữ ký & hạn sử dụng JWT Token
-        if (jwtTokenProviderStudent.validateToken(jwtToken)) {
+        if (!jwtTokenProviderStudent.validateToken(jwtToken)) {
             Map<String, Object> responseInvalid = new HashMap<>();
             responseInvalid.put("success", false);
             responseInvalid.put("message", "Token is invalid or expired.");
@@ -154,7 +158,7 @@ public class LoginStudentController {
         String jwtToken = authHeader.substring(7);
 
         // 3. Verify chữ ký & hạn sử dụng JWT Token
-        if (jwtTokenProviderStudent.validateToken(jwtToken)) {
+        if (!jwtTokenProviderStudent.validateToken(jwtToken)) {
             Map<String, Object> responseInvalid = new HashMap<>();
             responseInvalid.put("success", false);
             responseInvalid.put("message", "Token is invalid or expired.");

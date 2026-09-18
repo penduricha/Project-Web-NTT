@@ -2,12 +2,12 @@
 import Footer from "@/components/footer/Footer.vue";
 import Header from "@/components/header/Header.vue";
 import './page-404-not-found.scss';
-import RouterManagement from "@/routers/RouterManagement.js";
+import Router_management from "@/routers/router_management.js";
 import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
-import StudentLocalStorage from "@/local-storage/StudentLocalStorage.js";
+import StudentLocalStorage from "@/local_storage/studentLocalStorage.js";
 
 export default {
-  name: "Page404NotFound",
+  name: "PageNotFound",
 
   data() {
     return {
@@ -40,7 +40,7 @@ export default {
     },
 
     saveRouterPath(route) {
-      const routerManagement = new RouterManagement();
+      const routerManagement = new Router_management();
       routerManagement.savePath_To_SessionStorage(route);
     },
 
@@ -59,7 +59,7 @@ export default {
       //       alert(error);
       //     });
       //Cach 2
-      const routerManagement = new RouterManagement();
+      const routerManagement = new Router_management();
       const studentLocalStorage = new StudentLocalStorage();
       const checkPath_And_ID =
           routerManagement.getPath_From_LocalStorage() &&

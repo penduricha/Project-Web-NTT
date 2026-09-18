@@ -17,7 +17,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "students", indexes = {
+@Table(name = "ntt_students", indexes = {
         @Index(name = "idx_student_id", columnList = "student_id")
 })
 public class Student implements Serializable {

@@ -90,7 +90,7 @@ public class JwtTokenProviderStudent {
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
-            return false;
+            return true;
         } catch (ExpiredJwtException e) {
             // Token đã hết hạn
             System.err.println("JWT Token đã hết hạn: " + e.getMessage());
@@ -98,6 +98,6 @@ public class JwtTokenProviderStudent {
             // Token bị chỉnh sửa, sai chữ ký hoặc không đúng định dạng
             System.err.println("JWT Token không hợp lệ: " + e.getMessage());
         }
-        return true;
+        return false;
     }
 }

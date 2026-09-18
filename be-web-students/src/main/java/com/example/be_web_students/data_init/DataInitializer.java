@@ -27,6 +27,10 @@ public class DataInitializer {
     
     private final CourseRepository courseRepository;
 
+    private String tableStudent = "ntt_students";
+
+    private String tableCourse = "ntt_courses";
+
 
     public DataInitializer(JdbcTemplate jdbcTemplate, StudentRepository studentRepository, CourseRepository courseRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -44,8 +48,8 @@ public class DataInitializer {
 
         //set utf-8
         List<String> codeSQLSetUtf8List = Arrays.asList(
-                "ALTER TABLE students CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
-                "ALTER TABLE courses CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+                "ALTER TABLE "+tableStudent+" CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
+                "ALTER TABLE "+tableCourse+" CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
         );
 
         for (String sqlStatement : codeSQLSetUtf8List) {
@@ -57,7 +61,7 @@ public class DataInitializer {
             }
         }
 
-        Integer countCourse = jdbcTemplate.queryForObject("select count(*) from courses", Integer.class);
+        Integer countCourse = jdbcTemplate.queryForObject("select count(*) from "+tableCourse, Integer.class);
 
         Long courseId = 8480201L;
         String trainingSystem = "Master";
@@ -90,7 +94,7 @@ public class DataInitializer {
             courseRepository.save(course);
 
 
-            Integer countStudent = jdbcTemplate.queryForObject("select count(*) from students", Integer.class);
+            Integer countStudent = jdbcTemplate.queryForObject("select count(*) from "+tableStudent, Integer.class);
 
             if(countStudent == null || countStudent == 0) {
 //            {

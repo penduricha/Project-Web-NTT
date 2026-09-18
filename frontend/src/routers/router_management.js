@@ -1,4 +1,4 @@
-export default class RouterManagement {
+export default class Router_management {
     _variableRouterPathSession;
     _variableRouterPathLocalStorage;
 
@@ -35,9 +35,9 @@ export default class RouterManagement {
         return routerPath || null;
     }
 
-    //other functions local-storage,
+    //other functions local_storage,
     //session storages
-    //save path to local-storage
+    //save path to local_storage
     removePath_From_LocalStorage(){
         //Khi chuyển trang khác, path được save vào session.
         if(this.getPath_From_LocalStorage()) {

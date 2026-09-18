@@ -15,7 +15,7 @@ import java.util.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "courses", indexes = {
+@Table(name = "ntt_courses", indexes = {
         @Index(name = "idx_course_id", columnList = "course_id")
 })
 public class Course implements Serializable {

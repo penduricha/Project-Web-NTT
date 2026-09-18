@@ -1,4 +1,4 @@
-export default class StudentDao {
+export default class StudentDAO {
 
     static async getStudentIDAndPassword(studentID) {
         if(studentID === '21107601')

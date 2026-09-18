@@ -1,9 +1,9 @@
 <script>
 import './card-account-nav.scss';
 import '../../../assets/main-scss/theme-color.scss';
-import StudentLocalStorage from "@/local-storage/StudentLocalStorage.js";
+import StudentLocalStorage from "@/local_storage/studentLocalStorage.js";
 import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
-import RouterManagement from "@/routers/RouterManagement.js";
+import Router_management from "@/routers/router_management.js";
 
 export default {
   name: "CardAccountNav",
@@ -32,7 +32,7 @@ export default {
       const studentLocalStorage = new StudentLocalStorage();
       studentLocalStorage.removeStudentIDFromLocalStorage();
       const pathLogin = '/login';
-      const routerManagement = new RouterManagement();
+      const routerManagement = new Router_management();
       routerManagement.removePath_From_SessionStorage();
       routerManagement.removePath_From_LocalStorage();
       this.$router.replace({ path: pathLogin })
