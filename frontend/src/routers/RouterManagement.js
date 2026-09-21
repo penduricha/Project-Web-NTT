@@ -1,4 +1,4 @@
-export default class Router_management {
+export default class RouterManagement {
     _variableRouterPathSession;
     _variableRouterPathLocalStorage;
 
@@ -23,14 +23,14 @@ export default class Router_management {
         this.setVariableRouterPathLocalStorage('routerPathLocalStorage');
     }
 
-    savePath_To_SessionStorage(routerPath){
+    savePathToSessionStorage(routerPath){
         //Khi chuyển trang khác, path được save vào session.
         if(routerPath){
             sessionStorage.setItem(this.getVariableRouterPathSession(), routerPath);
         }
     }
 
-    getPath_From_SessionStorage(){
+    getPathFromSessionStorage(){
         const routerPath = sessionStorage.getItem(this.getVariableRouterPathSession());
         return routerPath || null;
     }
@@ -38,30 +38,30 @@ export default class Router_management {
     //other functions local_storage,
     //session storages
     //save path to local_storage
-    removePath_From_LocalStorage(){
+    removePathFromLocalStorage(){
         //Khi chuyển trang khác, path được save vào session.
-        if(this.getPath_From_LocalStorage()) {
+        if(this.getPathFromLocalStorage()) {
             localStorage.removeItem(this.getVariableRouterPathLocalStorage());
         } else {
             console.error('Local storage not found.');
         }
     }
 
-    removePath_From_SessionStorage(){
+    removePathFromSessionStorage(){
         //Khi chuyển trang khác, path được save vào session.
-        if(this.getPath_From_SessionStorage()) {
+        if(this.getPathFromSessionStorage()) {
             sessionStorage.removeItem(this.getVariableRouterPathSession());
         } else {
             console.error('Session storage not found.');
         }
     }
 
-    savePath_To_LocalStorage(routerPath){
+    savePathToLocalStorage(routerPath){
         //Khi chuyển trang khác, path được save vào session.
         localStorage.setItem(this.getVariableRouterPathLocalStorage(), routerPath);
     }
 
-    getPath_From_LocalStorage(){
+    getPathFromLocalStorage(){
         const routerPath = localStorage
             .getItem(this.getVariableRouterPathLocalStorage());
         return routerPath || null;

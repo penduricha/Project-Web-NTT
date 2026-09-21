@@ -1,10 +1,10 @@
 <script>
 import Footer from "@/components/footer/Footer.vue";
 import Header from "@/components/header/Header.vue";
-import './page-404-not-found.scss';
-import Router_management from "@/routers/router_management.js";
-import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
-import StudentLocalStorage from "@/local_storage/studentLocalStorage.js";
+import './page-not-found.scss';
+import RouterManagement from "@/routers/RouterManagement.js";
+import ButtonRed from "@/components/button/button_red/ButtonRed.vue";
+import StudentLocalStorage from "@/local_storage/StudentLocalStorage.js";
 
 export default {
   name: "PageNotFound",
@@ -40,8 +40,8 @@ export default {
     },
 
     saveRouterPath(route) {
-      const routerManagement = new Router_management();
-      routerManagement.savePath_To_SessionStorage(route);
+      const routerManagement = new RouterManagement();
+      routerManagement.savePathToSessionStorage(route);
     },
 
     handleReturnFrom404Page() {
@@ -59,17 +59,15 @@ export default {
       //       alert(error);
       //     });
       //Cach 2
-      const routerManagement = new Router_management();
+      const routerManagement = new RouterManagement();
       const studentLocalStorage = new StudentLocalStorage();
       const checkPath_And_ID =
-          routerManagement.getPath_From_LocalStorage() &&
+          routerManagement.getPathFromLocalStorage() &&
           studentLocalStorage.getStudentID_From_LocalStorage_StudentID();
       if(checkPath_And_ID) {
         const pathReturn = '/information-student';
         this.$router.replace({path: pathReturn}).then(() => {
-                setTimeout(() => {
-                  window.location.reload();
-                }, 10);
+
               })
               .catch((error) => {
                 console.error('Error navigating:', error);
@@ -78,9 +76,9 @@ export default {
       } else {
         const pathReturn = '/login';
         this.$router.replace({path: pathReturn}).then(() => {
-              setTimeout(() => {
-                window.location.reload();
-              }, 10);
+              // setTimeout(() => {
+              //   window.location.reload();
+              // }, 10);
             })
             .catch((error) => {
               console.error('Error navigating:', error);

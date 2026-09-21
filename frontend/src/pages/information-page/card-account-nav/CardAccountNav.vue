@@ -1,105 +1,95 @@
 <script>
 import './card-account-nav.scss';
 import '../../../assets/main-scss/theme-color.scss';
-import StudentLocalStorage from "@/local_storage/studentLocalStorage.js";
-import ButtonRed from "@/components/button/button-red/ButtonRed.vue";
-import Router_management from "@/routers/router_management.js";
+// import StudentLocalStorage from "@/local_storage/StudentLocalStorage.js";
+import ButtonRed from "@/components/button/button_red/ButtonRed.vue";
+// import RouterManagement from "@/routers/RouterManagement.js";
+import StudentRepository from "@/repository/StudentRepository.js";
 
 export default {
   name: "CardAccountNav",
 
   components: {
     ButtonRed
-
   },
 
   data() {
     return {
       textBtnLogout: 'Đăng xuất',
+      loadingButtonLogout: false,
+      disableButtonLogout: false,
     }
   },
 
-  created() {
+  // Guard được Vue Router gọi trước khi rời khỏi route hiện tại
+  async beforeRouteLeave(to, from, next) {
+    // Kiểm tra nếu route sắp chuyển đến là trang '/login' (do người dùng bấm nút Back)
+    if (to.path === '/login') {
+      try {
+        const studentRepository = new StudentRepository();
+        let status = await studentRepository.getResponseFromLogoutRequest();
 
-  },
-
-  mounted() {
-
+        if (status === "OK") {
+          // Xóa token / session trong LocalStorage nếu cần
+          // StudentLocalStorage.clean();
+          // Cho phép chuyển hướng về /login
+          next();
+        } else {
+          // Hủy chuyển hướng nếu logout không thành công
+          next(false);
+        }
+      } catch (error) {
+        console.error('Error to logout:', error);
+        next(false);
+      }
+    } else {
+      next(); // Cho phép chuyển hướng bình thường nếu đi tới trang khác
+    }
   },
 
   methods: {
-    handleLogout() {
-      const studentLocalStorage = new StudentLocalStorage();
-      studentLocalStorage.removeStudentIDFromLocalStorage();
+    async handleLogout() {
+      this.loadButtonLogout();
       const pathLogin = '/login';
-      const routerManagement = new Router_management();
-      routerManagement.removePath_From_SessionStorage();
-      routerManagement.removePath_From_LocalStorage();
-      this.$router.replace({ path: pathLogin })
-          .then(() => {
-            // Delay the reload to ensure the navigation is completed
-            // Adjust the timeout as needed
-            setTimeout(() => {
-              //window.location.reload();
-            }, 100);
-          })
-          .catch((error) => {
-            console.error('Error navigating:', error);
-            alert(error);
-          });
+      const studentRepository = new StudentRepository();
+      let status = await studentRepository.getResponseFromLogoutRequest();
+
+      if (status === "OK") {
+        this.$router.replace({ path: pathLogin }).catch((error) => {
+          console.error('Error navigating:', error);
+          alert(error);
+        });
+      }
+      this.stopLoadButtonLogout();
+    },
+
+    loadButtonLogout() {
+      this.loadingButtonLogout = true;
+      this.disableButtonLogout = true;
+      this.textBtnLogout = "";
+    },
+
+    stopLoadButtonLogout() {
+      this.loadingButtonLogout = false;
+      this.disableButtonLogout = false;
+      this.textBtnLogout = "Đăng xuất";
     },
 
     handleNavigatePersonalInformation() {
-      const path = '/information-student';
-      this.$router.replace({
-        path: path,
-        // query: {
-        // }
-      }).catch((error) => {
-        console.error('Error navigating :', error);
-        alert(error);
-      });
+      this.$router.push({ path: '/information-student' }).catch(err => alert(err));
     },
 
     handleNavigateListSubjects(){
-      const path = '/list-courses';
-      this.$router.replace({
-        path: path,
-        // query: {
-        // }
-      }).catch((error) => {
-        console.error('Error navigating :', error);
-        alert(error);
-      });
+      this.$router.push({ path: '/list-courses' }).catch(err => alert(err));
     },
 
     handleNavigateRegisterCourses() {
-      const path = '/register-courses';
-      this.$router.replace({
-        path: path,
-        // query: {
-        // }
-      }).catch((error) => {
-        console.error('Error navigating :', error);
-        alert(error);
-      });
+      this.$router.push({ path: '/register-courses' }).catch(err => alert(err));
     },
 
     handleNavigateUniversitySchedule() {
-      const path = '/university-schedule';
-      this.$router.replace({
-        path: path,
-        // query: {
-        // }
-      }).catch((error) => {
-        console.error('Error navigating :', error);
-        alert(error);
-      });
+      this.$router.push({ path: '/university-schedule' }).catch(err => alert(err));
     }
-  },
-
-  computed: {
-
   }
 }
 </script>
@@ -112,53 +102,17 @@ export default {
         <span class="text-card">Mã số sinh viên: 21026043</span>
         <span class="text-card">Giới tính: Nam</span>
         <span class="text-card">Hệ đào tạo: Đại học</span>
-        <ButtonRed :disable-button="false"
-                      :loading-button="false"
-                      :text-button="textBtnLogout"
-                      class="btn-logout"
-                      @click="handleLogout"
+        <ButtonRed :disable-button="disableButtonLogout"
+                   :loading-button="loadingButtonLogout"
+                   :text-button="textBtnLogout"
+                   class="btn-logout"
+                   @click="handleLogout"
         />
       </div>
-      <div class="card-image">
-        <img src="../../../assets/images/avatar_student.png"
-             alt="avatar student"
-             class="style-img-ava-student"
-        >
-      </div>
+      <div class="card-image"></div>
     </div>
-    <!-- <nav class="nav-bar-items">
-      <ul>
-        <li>
-          <a href="" class="text-nav"
-             @click.prevent="handleNavigatePersonalInformation()"
-          >Thông tin cá nhân</a>
-        </li>
-        <li>
-          <a href="" class="text-nav"
-             @click.prevent="handleNavigateRegisterCourses()"
-          >Đăng kí học phần</a>
-        </li>
-        <li>
-          <a href="" class="text-nav"
-             @click.prevent="handleNavigateListSubjects()"
-          >Chương trình khung</a>
-        </li>
-        <li>
-          <a href="" class="text-nav"
-             @click.prevent="handleNavigateUniversitySchedule()"
-          >Lịch học</a>
-        </li>
-        <li>
-          <a href="" class="text-nav">Học phí</a>
-        </li>
-        <li>
-          <a href="" class="text-nav">Điểm học phần</a>
-        </li>
-      </ul>
-    </nav> -->
   </div>
 </template>
 
 <style scoped lang="scss">
-
 </style>

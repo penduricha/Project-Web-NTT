@@ -14,18 +14,20 @@ import 'vuetify/dist/vuetify-labs.min.css'
 
 // Plugins & Local Storage / Routers
 import CanvasJSChart from '@canvasjs/vue-charts'
-import StudentLocalStorage from "@/local_storage/studentLocalStorage.js"
-import Router_management from "@/routers/router_management.js"
+import StudentLocalStorage from "@/local_storage/StudentLocalStorage.js"
+import RouterManagement from "@/routers/RouterManagement.js"
 import routersBeforeLogin from "@/routers/routers_before_login.js"
 import routersAfterLogin from "@/routers/routers_after_login.js"
+import {StudentService} from "@/services/spring/StudentService.js";
+import {TokenLogin} from "@/model/TokenLogin.js";
+
+const studentService = new StudentService();
+
+const tokenLogin = new TokenLogin();
 
 const app = createApp(App)
-app.use(CanvasJSChart)
 app.use(createVuetify())
 
-/**
- * Khởi tạo Router và Mount ứng dụng
- */
 function initApp(routes, targetPath) {
     const router = createRouter({
         history: createWebHistory(),
@@ -41,37 +43,55 @@ function initApp(routes, targetPath) {
     app.mount('#app')
 }
 
-/**
- * Xử lý logic điều hướng dựa trên trạng thái đăng nhập
- */
-function execute() {
-    const routerManagement = new Router_management()
+async function execute() {
+    const routerManagement = new RouterManagement()
     const studentLocalStorage = new StudentLocalStorage()
     const currentPath = window.location.pathname
 
-    const isLoggedIn = Boolean(
-        routerManagement.getPath_From_LocalStorage() &&
-        studentLocalStorage.getStudentID_From_LocalStorage_StudentID()
-    )
+    // const isLoggedIn = Boolean(
+    //     routerManagement.getPath_From_LocalStorage() &&
+    //     studentLocalStorage.getStudentId_From_LocalStorage() &&
+    //     tokenLogin.getRefreshTokenFromStorage()
+    // )
+    let statusLoginAuto = false;
 
-    const path404 = '/404-not-found'
-    
-    // Chọn danh sách routers và trang mặc định phù hợp với trạng thái đăng nhập
-    const activeRouters = isLoggedIn ? routersAfterLogin : routersBeforeLogin
-    const defaultPath = isLoggedIn ? routerManagement.getPath_From_LocalStorage() : '/login'
+    let accessToken = tokenLogin.getAccessTokenFromStorage();
+    let refreshToken = tokenLogin.getRefreshTokenFromStorage();
+    tokenLogin.setAccessToken(accessToken);
+    tokenLogin.setRefreshToken(refreshToken);
 
-    // Kiểm tra xem path hiện tại có nằm trong danh sách router cho phép không
-    const isValidRoute = activeRouters.some(route => route.path === currentPath)
+    if(refreshToken) {
+        statusLoginAuto = await studentService.getDataToAutoLoginAccessToken(tokenLogin);
+    }
+
+    if(!accessToken || !refreshToken) {
+        routerManagement.removePathFromLocalStorage();
+    }
+
+    const activeRouters = statusLoginAuto ? routersAfterLogin : routersBeforeLogin;
+
+    const defaultPath = statusLoginAuto ? routerManagement.getPathFromLocalStorage() : '/login';
+
+    // Tìm route khớp với currentPath
+    const matchedRoute = activeRouters.find(route => route.path === currentPath)
 
     let targetPath = currentPath
 
-    if (!isValidRoute) {
-        targetPath = path404
-    } else if (currentPath === '/') {
+    // 1. Kiểm tra nếu chưa đăng nhập và route có cờ allow === false (hoặc route không hợp lệ)
+    if (!statusLoginAuto && (matchedRoute?.allow === false || !matchedRoute)) {
+        targetPath = '/login'
+    }
+    // 2. Nếu đã đăng nhập nhưng route không tồn tại trong danh sách
+    else if (!matchedRoute) {
+        targetPath = '/404-not-found'
+    }
+    // 3. Nếu đang ở root '/'
+    else if (currentPath === '/') {
         targetPath = defaultPath
-    } else {
-        // Kiểm tra SessionStorage xem có khớp không (nếu cần thiết)
-        const pathSession = routerManagement.getPath_From_SessionStorage()
+    }
+    // 4. Kiểm traSessionStorage
+    else {
+        const pathSession = routerManagement.getPathFromSessionStorage()
         if (pathSession && currentPath !== pathSession) {
             targetPath = pathSession
         }
@@ -80,5 +100,4 @@ function execute() {
     initApp(activeRouters, targetPath)
 }
 
-// Chạy ứng dụng
-execute()
+await execute();

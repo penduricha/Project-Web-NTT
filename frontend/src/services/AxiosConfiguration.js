@@ -1,6 +1,6 @@
-import axios from "axios";
 
-export default class AxiosConfig {
+
+export default class AxiosConfiguration {
     constructor() {}
 
     // Call api from spring boot

@@ -35,8 +35,8 @@ public class StudentTokenServiceImpl implements I_StudentTokenService {
 
     @Override
     public boolean addStudentAccessToken(StudentAccessToken studentAccessToken) throws RedisBusyException {
-        boolean StudentAccessTokenFound = findStudentAccessTokenByJwtToken(studentAccessToken.getJwtToken());
-        if(!StudentAccessTokenFound) {
+        boolean studentAccessTokenFound = findStudentAccessTokenByJwtToken(studentAccessToken.getJwtToken());
+        if(!studentAccessTokenFound) {
             studentAccessTokenRepository.save(studentAccessToken);
             return true;
         }

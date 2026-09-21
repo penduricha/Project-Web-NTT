@@ -8,12 +8,12 @@ import PageNotFound from "@/pages/404-not-found-page/PageNotFound.vue";
 
 const routers = [
     // '/' khi init trang, prop param de truyen tham so.
-    { path: '/', component: InformationPage, allow: true},
-    { path: '/login', component: LoginPage, allow: false},
+    { path: '/', component: InformationPage, allow: true, props: (route) => ({})},
+    { path: '/login', component: LoginPage, allow: true, props: (route) => ({})},
     // { path: '/register-courses', component: RegisterCourses, allow: true},
-    { path: '/information-student', component: InformationPage, allow: true},
+    { path: '/information-student', component: InformationPage, allow: true, props: (route) => ({})},
     // { path: '/list-courses', component: ListCourses, allow: true},
-    { path: '/404-not-found', component: PageNotFound, allow: true},
+    { path: '/404-not-found', component: PageNotFound, allow: true, props: (route) => ({})},
     // { path: '/university-schedule', component: UniversitySchedule, allow: true},
 ];
 export default routers;

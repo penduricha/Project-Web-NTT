@@ -1,6 +1,6 @@
 <script>
 import './information-page.scss';
-import Router_management from "@/routers/router_management.js";
+import RouterManagement from "@/routers/RouterManagement.js";
 import Header from "../../components/header/Header.vue";
 import Footer from "../../components/footer/Footer.vue";
 
@@ -48,8 +48,8 @@ export default {
     },
 
     saveRouterPath(route) {
-      const routerManagement = new Router_management();
-      routerManagement.savePath_To_SessionStorage(route);
+      const routerManagement = new RouterManagement();
+      routerManagement.savePathToSessionStorage(route);
     },
   },
 

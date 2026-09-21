@@ -7,7 +7,7 @@ export default {
     textButton: {
       required: true,
       type: String,
-      default: null,
+      default: "",
     },
 
     loadingButton: {

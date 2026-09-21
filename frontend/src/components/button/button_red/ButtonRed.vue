@@ -41,7 +41,7 @@ export default {
 <template>
 <!--   -->
   <button class="button-red" :disabled="disableButton"
-          :class="['button-red-opacity-disabled', setOpacityBtnLogin]"
+          :class="['button_red-opacity-disabled', setOpacityBtnLogin]"
          >
     {{ textButton }}
     <div v-if="loadingButton" class="spinner-border text-light style-icon-spinner" role="status"/>
@@ -51,7 +51,7 @@ export default {
 
 <style scoped lang="scss">
 .style-icon-spinner {
-  width: 1.65rem;
-  height: 1.65rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 </style>
