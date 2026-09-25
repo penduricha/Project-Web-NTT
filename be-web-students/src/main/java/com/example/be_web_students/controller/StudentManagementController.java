@@ -83,13 +83,19 @@ public class StudentManagementController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseNoToken);
         }
 
-        studentTokenService.removeStudentAccessTokenByJwtToken(accessToken);
-        studentTokenService.removeStudentRefreshTokenByJwtToken(refreshToken);
+        boolean status1 = studentTokenService.removeStudentAccessTokenByJwtToken(accessToken);
+        boolean status2 = studentTokenService.removeStudentRefreshTokenByJwtToken(refreshToken);
 
         Map<String, Object> responseReturn = new HashMap<>();
-        responseReturn.put("status", 200);
-        responseReturn.put("message", "Log out successfully.");
 
+        if(status1 && status2) {
+            responseReturn.put("status", 200);
+            responseReturn.put("message", "Log out successfully.");
+        } else {
+            responseReturn.put("status", 401);
+            responseReturn.put("message", "Can't remove access token or refresh token.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseReturn);
+        }
         return ResponseEntity.ok(responseReturn);
     }
 

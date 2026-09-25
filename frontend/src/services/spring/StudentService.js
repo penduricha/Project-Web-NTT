@@ -9,9 +9,8 @@ const studentLocalStorage = new StudentLocalStorage();
 
 async function getDataToAutoLoginRefreshToken(refreshToken) {
     const path = "/student/auth/login/auto/refresh-token";
-
     return await springConfigHeader
-        .getAPIClientWithHeadersIsAccessToken(refreshToken).get(path);
+        .getAPIClientWithHeadersIsAccessToken(refreshToken).get(path, springConfigHeader.getAuthorization());
 }
 
 export class StudentService {
@@ -26,7 +25,7 @@ export class StudentService {
         };
 
         const path = '/student/auth/login';
-        return springConfigHeader.getAPIClientNoHeaders().post(path, data, {});
+        return springConfigHeader.getAPIClientNoHeaders().post(path, data, springConfigHeader.getAuthorization());
     }
 
     async postDataToLogoutRequest(tokenLogin) {
@@ -41,7 +40,7 @@ export class StudentService {
         };
 
         const path = '/student/auth/logout';
-        return springConfigHeader.getAPIClientNoHeaders().post(path, data, {});
+        return springConfigHeader.getAPIClientNoHeaders().post(path, data, springConfigHeader.getAuthorization());
     }
 
     async getDataToAutoLoginAccessToken(tokenLogin) {
@@ -57,7 +56,7 @@ export class StudentService {
             // 1. Thử gọi API bằng Access Token hiện tại
             let dataResponse = await springConfigHeader
                 .getAPIClientWithHeadersIsAccessToken(tokenLogin.getAccessToken())
-                .get(path);
+                .get(path, springConfigHeader.getAuthorization());
 
             if (dataResponse.status === 200) {
                 let studentId = dataResponse.data.data.studentId;
@@ -85,7 +84,7 @@ export class StudentService {
                         // 3. Đã có Access Token mới -> Gọi lại API cũ để lấy studentId
                         let retryResponse = await springConfigHeader
                             .getAPIClientWithHeadersIsAccessToken(accessTokenNew)
-                            .get(path);
+                            .get(path, springConfigHeader.getAuthorization());
 
                         if (retryResponse.status === 200) {
                             let studentId = retryResponse.data.data.studentId;

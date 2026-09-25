@@ -41,11 +41,11 @@ public class StudentJwtCacheController {
     //curl -X DELETE "http://localhost:8080/api/cached?jwtToken=123"
     public ResponseEntity<?> deleteStudentJWTCached_By_JwtToken(@RequestParam String jwtToken) throws RuntimeException {
 
-//        System.out.println("JWT Token: "+jwtToken);
+//      System.out.println("JWT Token: "+jwtToken);
 
         StudentAccessToken studentAccessTokenFound = studentAccessTokenRepository.findStudentAccessTokenByJwtToken(jwtToken);
 
-//        System.out.println("Cached student: "+ studentJwtCacheFound);
+//      System.out.println("Cached student: "+ studentJwtCacheFound);
 
         if(studentAccessTokenFound != null) {
             studentAccessTokenRepository.delete(studentAccessTokenFound);

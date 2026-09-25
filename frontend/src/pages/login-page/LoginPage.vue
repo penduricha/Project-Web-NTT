@@ -38,7 +38,7 @@ export default {
 
   data() {
     return {
-      studentId: Number(null),
+      studentId: null,
       password: "",
       validateLogin: "",
       rememberMe: false,
@@ -107,7 +107,6 @@ export default {
     navigateToRegisterCoursesPage() {
       //save path to local storage
       const routerManagement = new RouterManagement();
-      const studentLocalStorage = new StudentLocalStorage();
 
       //save path
       const routerPathToSave = '/information-student';
