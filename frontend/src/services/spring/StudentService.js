@@ -7,11 +7,15 @@ const springConfigHeader = new SpringConfigHeader();
 
 const studentLocalStorage = new StudentLocalStorage();
 
-async function getDataToAutoLoginRefreshToken(refreshToken) {
-    const path = "/student/auth/login/auto/refresh-token";
-    return await springConfigHeader
-        .getAPIClientWithHeadersIsAccessToken(refreshToken).get(path, springConfigHeader.getAuthorization());
-}
+// async function getDataToAutoLoginRefreshToken(refreshToken) {
+//     const path = "/student/auth/login/auto/refresh-token";
+//     return await springConfigHeader
+//         .getAPIClientWithHeadersIsAccessToken(refreshToken).get(path, {
+//             ...springConfigHeader.getAuthorization(), // Tạo { auth: { username, password } }
+//             headers: {
+//                 Authorization: `Bearer ${refreshToken}`
+//             }});
+// }
 
 export class StudentService {
     async postDataToLoginRequest(studentAccount) {
@@ -43,6 +47,7 @@ export class StudentService {
         return springConfigHeader.getAPIClientNoHeaders().post(path, data, springConfigHeader.getAuthorization());
     }
 
+
     async getDataToAutoLoginAccessToken(tokenLogin) {
         let statusAutoLogin = false;
 
@@ -50,13 +55,16 @@ export class StudentService {
             throw new Error("Invalid TokenLogin instance");
         }
 
-        const path = "/student/auth/login/auto/access-token";
+        const pathAccessToken = "/student/auth/login/auto/access-token";
+        const pathRefreshToken = "/student/auth/login/auto/refresh-token";
 
         try {
             // 1. Thử gọi API bằng Access Token hiện tại
+            // Instance đã có sẵn cả 'Authorization: Bearer <token>' và 'X-Client-Auth: Basic <base64>'
+            // Tham số 2 của POST là Body (truyền {} nếu API không yêu cầu Body)
             let dataResponse = await springConfigHeader
                 .getAPIClientWithHeadersIsAccessToken(tokenLogin.getAccessToken())
-                .get(path, springConfigHeader.getAuthorization());
+                .get(pathAccessToken);
 
             if (dataResponse.status === 200) {
                 let studentId = dataResponse.data.data.studentId;
@@ -64,15 +72,24 @@ export class StudentService {
                 return true;
             }
         } catch (error) {
-            // 2. Bắt lỗi khi Access Token bị hết hạn (HTTP Status 401)
-            if (error.response && error.response.status === 401) {
-                console.warn('Access Token is expired or not existed. Renewing tokens...');
+            // 2. Bắt lỗi 401 khi Access Token bị hết hạn
+            const status = error.response?.status;
+
+            console.log("Error object caught:", error);
+            console.log("Response status:", error.response?.status);
+
+            if (status === 401) {
+                console.warn('Access Token is expired. Renewing tokens...');
+                console.log('Exception about err: '+error);
+
                 try {
-                    // Thử đổi Refresh Token lấy cặp Token mới
-                    let dataResponseRefreshToken = await getDataToAutoLoginRefreshToken(tokenLogin.getRefreshToken());
+                    // Gọi API Refresh Token - Truyền Refresh Token vào Instance!
+                    let dataResponseRefreshToken = await springConfigHeader
+                        .getAPIClientWithHeadersIsAccessToken(tokenLogin.getRefreshToken())
+                        .get(pathRefreshToken);
 
                     if (dataResponseRefreshToken && dataResponseRefreshToken.status === 200) {
-                        // Cập nhật Token mới vào Object & LocalStorage
+                        // Cập nhật Token mới vào Object & Storage
                         let accessTokenNew = dataResponseRefreshToken.data.data.accessToken;
                         let refreshTokenNew = dataResponseRefreshToken.data.data.refreshToken;
 
@@ -81,10 +98,10 @@ export class StudentService {
                         tokenLogin.setAccessTokenToStorage();
                         tokenLogin.setRefreshTokenToStorage();
 
-                        // 3. Đã có Access Token mới -> Gọi lại API cũ để lấy studentId
+                        // 3. Retry gọi lại API cũ bằng Access Token MỚI
                         let retryResponse = await springConfigHeader
                             .getAPIClientWithHeadersIsAccessToken(accessTokenNew)
-                            .get(path, springConfigHeader.getAuthorization());
+                            .get(pathAccessToken);
 
                         if (retryResponse.status === 200) {
                             let studentId = retryResponse.data.data.studentId;
@@ -92,18 +109,15 @@ export class StudentService {
                             statusAutoLogin = true;
                         }
                     } else {
-                        // Refresh Token cũng bị từ chối
                         tokenLogin.removeAccessTokenAndRefreshTokenFromStorage();
                         studentLocalStorage.removeStudentIdFromLocalStorage();
                     }
                 } catch (refreshError) {
-                    // Lỗi khi gọi Refresh Token (ví dụ 401/403 do Refresh Token hết hạn)
                     console.error('Refresh token failed:', refreshError);
                     tokenLogin.removeAccessTokenAndRefreshTokenFromStorage();
                     studentLocalStorage.removeStudentIdFromLocalStorage();
                 }
             } else {
-                // Lỗi hệ thống khác (500, lỗi mạng...)
                 console.error('Auto login error:', error);
                 tokenLogin.removeAccessTokenAndRefreshTokenFromStorage();
                 studentLocalStorage.removeStudentIdFromLocalStorage();

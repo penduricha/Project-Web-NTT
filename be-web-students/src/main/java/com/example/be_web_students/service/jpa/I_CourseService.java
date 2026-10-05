@@ -1,4 +1,4 @@
-package com.example.be_web_students.service;
+package com.example.be_web_students.service.jpa;
 
 import com.example.be_web_students.model.jpa.Course;
 import org.springframework.orm.jpa.JpaSystemException;

@@ -1,5 +1,6 @@
 package com.example.be_web_students.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig {
 
     /* ===================================================================================
      * TRƯỜNG HỢP 1: THOẢI MÁI (DEV / TEST NHANH)
@@ -27,41 +28,41 @@ public class SecurityConfig  {
      * - Cho phép MỌI Origin, Method, Header truy cập qua CORS
      * =================================================================================== */
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                // 1. Kích hoạt CORS hỗ trợ Spring Security
-//                .cors(Customizer.withDefaults())
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        // 2. BẮT BUỘC: Cho phép toàn bộ Request Preflight (OPTIONS) đi qua
-//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//                        .anyRequest().permitAll()
-//                );
-//
-//        return http.build();
-//    }
-//
-//    // 3. Khai báo Bean nguồn cấu hình CORS
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        // Chấp nhận tất cả Origin từ Localhost (Bao gồm port 63342 của IDE)
-//        config.setAllowedOriginPatterns(List.of(
-//                "http://localhost:*",
-//                "http://127.0.0.1:*"
-//        ));
-//
-//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//
-//        config.setAllowedHeaders(List.of("*"));
-//        config.setAllowCredentials(true);
-//        config.setExposedHeaders(List.of("Authorization"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//        return source;
-//    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // 1. Kích hoạt CORS hỗ trợ Spring Security
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        // 2. BẮT BUỘC: Cho phép toàn bộ Request Preflight (OPTIONS) đi qua
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().permitAll()
+                );
+
+        return http.build();
+    }
+
+    // 3. Khai báo Bean nguồn cấu hình CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Chấp nhận tất cả Origin từ Localhost (Bao gồm port 63342 của IDE)
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(List.of("Authorization"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 
     /* ===================================================================================
@@ -72,18 +73,29 @@ public class SecurityConfig  {
      * (BỎ COMMENT TOÀN BỘ BLOCK DƯỚI ĐÂY VÀ COMMENT BLOCK TRƯỜNG HỢP 1 KHI DÙNG)
      * =================================================================================== */
 
+    /*
+
     @Bean
-    public SecurityFilterChain filterChainSecured(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChainSecured(HttpSecurity http) throws RuntimeException {
         http
                 .cors(cors -> cors.configurationSource(corsSecuredSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Ngoại lệ: Các API public (Đăng nhập, Đăng ký, Public docs...)
-                        //.requestMatchers("/api/student/auth/**", "/public/**").permitAll()
-                        // 2. Ràng buộc: Tất cả các API còn lại BẮT BUỘC phải đăng nhập / đính kèm Auth Header
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        //Cho phep free cac request nay
+                        .requestMatchers("/student/auth/login/auto/refresh-token").permitAll()
+                        .requestMatchers("/student/auth/login/auto/access-token").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Sử dụng Basic Auth (Hoặc thay bằng Bearer Token/JWT)
+                .httpBasic(basic -> basic
+                        // Bắt sự kiện 401 của Basic Auth và trả về JSON/Error thuần túy
+                        // BỎ HEADER 'WWW-Authenticate' để Browser không chặn JS và không hiện Pop-up
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"status\": 401, \"message\": \"Unauthorized\"}");
+                        })
+                );
 
         return http.build();
     }
@@ -91,31 +103,33 @@ public class SecurityConfig  {
     private CorsConfigurationSource corsSecuredSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Chỉ cho phép danh sách Origin/Domain đáng tin cậy
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:63342", // Web Preview (IntelliJ)
-                "http://localhost:5173",  // Vue / Vite
-                "http://localhost:3000",  // ReactJS
-                "http://localhost:3001"   // Next.js
+                "http://localhost:63342",
+                "http://localhost:5173",  // Origin của Vue/Vite
+                "http://localhost:3000",
+                "http://localhost:3001"
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-        // Ràng buộc danh sách Header an toàn được chấp nhận
+        // Bổ sung "X-Client-Auth" hoặc dùng "*" để chấp nhận mọi header gửi từ Frontend
         configuration.setAllowedHeaders(List.of(
                 "Authorization",
                 "Content-Type",
                 "X-Requested-With",
                 "Accept",
-                "Origin"
+                "Origin",
+                "X-Client-Auth" // <--- THÊM HEADER NÀY ĐỂ FIX LỖI CORS PREFLIGHT
         ));
 
-        // Cho phép Frontend đọc lại các Header nhạy cảm từ Response
+        // Hoặc cho phép tất cả các headers:
+        // configuration.setAllowedHeaders(List.of("*"));
+
         configuration.setExposedHeaders(List.of("Authorization", "Link", "X-Total-Count"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    }*/
 }

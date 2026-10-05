@@ -89,7 +89,7 @@ public class StudentManagementController {
         Map<String, Object> responseReturn = new HashMap<>();
 
         if(status1 && status2) {
-            responseReturn.put("status", 200);
+            responseReturn.put("status", HttpStatus.OK.value());
             responseReturn.put("message", "Log out successfully.");
         } else {
             responseReturn.put("status", 401);

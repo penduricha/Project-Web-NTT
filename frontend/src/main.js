@@ -45,7 +45,7 @@ function initApp(routes, targetPath) {
 
 async function execute() {
     const routerManagement = new RouterManagement()
-    const studentLocalStorage = new StudentLocalStorage()
+    //const studentLocalStorage = new StudentLocalStorage()
     const currentPath = window.location.pathname
 
     // const isLoggedIn = Boolean(
@@ -63,6 +63,8 @@ async function execute() {
     if(refreshToken) {
         statusLoginAuto = await studentService.getDataToAutoLoginAccessToken(tokenLogin);
     }
+
+    console.log("Status login auto:", statusLoginAuto);
 
     if(!accessToken || !refreshToken) {
         routerManagement.removePathFromLocalStorage();

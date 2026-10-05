@@ -31,6 +31,10 @@ export default class StudentRepository {
 
                 tokenLogin.setAccessTokenToStorage();
                 tokenLogin.setRefreshTokenToStorage();
+                const routerManagement = new RouterManagement();
+
+                const firstPathAfterLogin = "/information-student";
+                routerManagement.savePathToLocalStorage(firstPathAfterLogin);
                 studentLocalStorage.setStudentIdToLocalStorage(studentAccount.getStudentId());
 
                 statusLogin = "OK";

@@ -20,11 +20,47 @@ export default class SpringConfigHeader {
         });
     }
 
+    // getAPIClientWithHeadersIsAccessToken(token) {
+    //     return axios.create({
+    //         baseURL: axiosConfig.requestPathFromSpringBoot(),
+    //         auth: {
+    //             username: this.#authUsername,
+    //             password: this.#authPassword
+    //         },
+    //         // auth: {},
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //             'Content-Type': 'application/json'
+    //         }
+    //     });
+    // }
+
+    //Ko username and password
+    // getAPIClientWithHeadersIsAccessToken(token) {
+    //     return axios.create({
+    //         baseURL: axiosConfig.requestPathFromSpringBoot(),
+    //         // Giữ Basic Auth chuẩn để không bị lỗi CORS
+    //         // auth: {
+    //         //     username: this.#authUsername,
+    //         //     password: this.#authPassword,
+    //         // },
+    //         // Truyền Bearer Token vào header tiêu chuẩn
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //             'Content-Type': 'application/json'
+    //         }
+    //     });
+    // }
+
     getAPIClientWithHeadersIsAccessToken(token) {
+        // Mã hóa Basic Auth (username:password) sang Base64
+        const basicAuthBase64 = btoa(`${this.#authUsername}:${this.#authPassword}`);
+
         return axios.create({
             baseURL: axiosConfig.requestPathFromSpringBoot(),
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,           // JWT Token
+                'X-Client-Auth': `Basic ${basicAuthBase64}`,    // Basic Auth đẩy vào Header riêng (tránh đè Authorization)
                 'Content-Type': 'application/json'
             }
         });
@@ -36,10 +72,12 @@ export default class SpringConfigHeader {
             auth: {
                 username: this.#authUsername,
                 password: this.#authPassword,
-            }
+            },
+            withCredentials: true,
         };
 
         // Nếu không cần auth
-        // return {};
+        //return {};
     }
+
 }

@@ -5,11 +5,12 @@ import com.example.be_web_students.model.cached.StudentRefreshToken;
 import com.example.be_web_students.model.jpa.Course;
 import com.example.be_web_students.model.jpa.Student;
 import com.example.be_web_students.security.jwt.JwtTokenProviderStudent;
-import com.example.be_web_students.service.I_StudentService;
+
 
 import com.example.be_web_students.repository.jpa.CourseRepository;
 import com.example.be_web_students.repository.jpa.StudentRepository;
 import com.example.be_web_students.service.cached.impl.StudentTokenServiceImpl;
+import com.example.be_web_students.service.jpa.I_StudentService;
 import io.lettuce.core.RedisBusyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -135,6 +136,20 @@ public class StudentServiceImpl implements I_StudentService {
             }
         }
         return responseSuccess;
+    }
+
+    @Override
+    public Map<String, Object> getStudentInfo(Long studentId) throws JpaSystemException {
+        Map<String, Object> responseData = new HashMap<>();
+        Student studentFound = studentRepository.findStudentByStudentId(studentId);
+        if (studentFound != null) {
+            responseData.put("studentId", studentFound.getStudentId());
+            responseData.put("studentName", studentFound.getStudentName());
+            responseData.put("gender", studentFound.getGender());
+            responseData.put("clazzName", studentFound.getClazzName());
+            responseData.put("course", studentFound.getCourse());
+        }
+        return responseData;
     }
 
 //    public String generateHash(String rawText, int strength) {

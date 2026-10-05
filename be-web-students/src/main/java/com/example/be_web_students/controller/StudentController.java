@@ -4,6 +4,7 @@ import com.example.be_web_students.model.jpa.Student;
 import com.example.be_web_students.service.jpa.impl.StudentServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -72,5 +73,23 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    @GetMapping ("/information")
+    public ResponseEntity<?> getStudentInformation(@RequestParam Long studentId) throws RuntimeException {
+        Map<String, Object> responseHttp = new HashMap<>();
+        Map<String, Object> responseData = studentServiceImpl.getStudentInfo(studentId);
+
+        responseHttp.put("status", HttpStatus.OK.value());
+
+        if(responseData.isEmpty()) {
+            responseHttp.put("message", "Student not found.");
+        } else {
+            responseHttp.put("message", "Student found successfully.");
+        }
+
+        responseHttp.put("data", responseData);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseHttp);
     }
 }

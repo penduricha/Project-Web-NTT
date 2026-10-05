@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "student_access_tokens", timeToLive = 60)
+@RedisHash(value = "student_access_tokens", timeToLive = 30)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 //Added 'org.hibernate.orm:hibernate-jcache' to gradle
