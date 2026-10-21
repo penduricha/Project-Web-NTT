@@ -64,6 +64,10 @@ export default class StudentLocalStorage {
         localStorage.setItem(StudentLocalStorage.STORAGE_KEYS.STUDENT_ID, studentId);
     }
 
+    getStudentIdToLocalStorage() {
+        return localStorage.getItem(StudentLocalStorage.STORAGE_KEYS.STUDENT_ID);
+    }
+
     /**
      * Xóa riêng studentId khỏi localStorage
      */

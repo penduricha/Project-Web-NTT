@@ -47,6 +47,9 @@ public class Course implements Serializable {
     @Column(nullable = false, columnDefinition = "nvarchar(50)", name = "type_of_training")
     private String typeOfTraining;
 
+    @Column(nullable = false, columnDefinition = "int", name = "year_opening")
+    private int yearOpening;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Student> students = new ArrayList<>();

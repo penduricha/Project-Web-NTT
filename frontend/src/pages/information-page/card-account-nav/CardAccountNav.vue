@@ -13,11 +13,55 @@ export default {
     ButtonRed
   },
 
+  props :{
+
+  },
+
   data() {
     return {
       textBtnLogout: 'Đăng xuất',
       loadingButtonLogout: false,
       disableButtonLogout: false,
+
+      /*
+              {
+            "data": {
+                "studentId": 2500021775,
+                "gender": true,
+                "studentName": "Từ Quang Nhật",
+                "course": {
+                    "courseId": 8480201,
+                    "trainingSystem": "Master",
+                    "branch": "An Phu Dong ward, Ho Chi Minh city.",
+                    "industry": "CNTT",
+                    "faculty": "Khoa CNTT",
+                    "major": "AI/ML",
+                    "typeOfTraining": "Research",
+                    "yearOpening": 2025
+                },
+                "clazzName": "25MTH1B"
+            },
+            "message": "Student found successfully.",
+            "status": 200
+        }
+       */
+
+      //Student Info
+      studentId: null,
+      studentName: null,
+      gender: null,
+      genderBool: true,
+      clazzName: null,
+
+      //University
+      industry: null,
+      faculty: null,
+      branch: null,
+      typeOfTraining: null,
+      major: null,
+      yearOpening: null,
+
+
     }
   },
 
@@ -47,7 +91,24 @@ export default {
     }
   },
 
+  async created() {
+    await this.fetchDataStudentInformation();
+  },
+
   methods: {
+    async fetchDataStudentInformation() {
+      const studentRepository = new StudentRepository();
+      let studentFetched = await studentRepository.getStudentInformationByStudentId();
+      console.log("Student from API: ", studentFetched);
+      if(studentFetched) {
+        this.studentId = studentFetched.studentId;
+        this.studentName = studentFetched.studentName;
+        this.genderBool = studentFetched.gender;
+        this.gender = this.genderBool ? "Nam" : "Nữ";
+        this.clazzName = studentFetched.clazzName;
+      }
+    },
+
     async handleLogout() {
       this.loadButtonLogout();
       const pathLogin = '/login';
@@ -98,10 +159,10 @@ export default {
   <div class="div-account-nav">
     <div class="div-card-account-image">
       <div class="card-text-account">
-        <span class="text-card">Họ và tên: Trần Văn An</span>
-        <span class="text-card">Mã số sinh viên: 21026043</span>
-        <span class="text-card">Giới tính: Nam</span>
-        <span class="text-card">Hệ đào tạo: Đại học</span>
+        <span class="text-card">Họ và tên: {{studentName}}</span>
+        <span class="text-card">Mã số sinh viên: {{studentId}}</span>
+        <span class="text-card">Giới tính: {{gender}}</span>
+        <span class="text-card">Lớp: {{clazzName}}</span>
         <ButtonRed :disable-button="disableButtonLogout"
                    :loading-button="loadingButtonLogout"
                    :text-button="textBtnLogout"

@@ -52,15 +52,15 @@ export default class SpringConfigHeader {
     //     });
     // }
 
-    getAPIClientWithHeadersIsAccessToken(token) {
+    getAPIClientWithHeadersToken(token) {
         // Mã hóa Basic Auth (username:password) sang Base64
-        const basicAuthBase64 = btoa(`${this.#authUsername}:${this.#authPassword}`);
+        //const basicAuthBase64 = btoa(`${this.#authUsername}:${this.#authPassword}`);
 
         return axios.create({
             baseURL: axiosConfig.requestPathFromSpringBoot(),
             headers: {
                 'Authorization': `Bearer ${token}`,           // JWT Token
-                'X-Client-Auth': `Basic ${basicAuthBase64}`,    // Basic Auth đẩy vào Header riêng (tránh đè Authorization)
+                //'X-Client-Auth': `Basic ${basicAuthBase64}`,    // Basic Auth đẩy vào Header riêng (tránh đè Authorization)
                 'Content-Type': 'application/json'
             }
         });
@@ -69,10 +69,11 @@ export default class SpringConfigHeader {
     getAuthorization() {
         // Nếu cần HTTP Basic Auth
         return {
-            auth: {
-                username: this.#authUsername,
-                password: this.#authPassword,
-            },
+            // auth: {
+            //     username: this.#authUsername,
+            //     password: this.#authPassword,
+            // },
+            auth: {},
             withCredentials: true,
         };
 

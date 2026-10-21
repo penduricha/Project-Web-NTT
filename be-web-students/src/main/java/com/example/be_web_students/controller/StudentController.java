@@ -76,6 +76,7 @@ public class StudentController {
     }
 
     @GetMapping ("/information")
+    //@RequestHeader(value = "Authorization", required = false) String authHeader
     public ResponseEntity<?> getStudentInformation(@RequestParam Long studentId) throws RuntimeException {
         Map<String, Object> responseHttp = new HashMap<>();
         Map<String, Object> responseData = studentServiceImpl.getStudentInfo(studentId);
@@ -87,9 +88,7 @@ public class StudentController {
         } else {
             responseHttp.put("message", "Student found successfully.");
         }
-
         responseHttp.put("data", responseData);
-
         return ResponseEntity.status(HttpStatus.OK).body(responseHttp);
     }
 }

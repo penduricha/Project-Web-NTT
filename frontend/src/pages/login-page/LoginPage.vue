@@ -120,7 +120,7 @@ export default {
         // Delay the reload to ensure the navigation is completed
         // Adjust the timeout as needed
         // setTimeout(() => {
-        //    //window.location.reload();
+        //    window.location.reload();
         // }, 50);
       }).catch((error) => {
         console.error('Error navigating :', error);

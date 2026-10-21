@@ -27,9 +27,9 @@ public class DataInitializer {
     
     private final CourseRepository courseRepository;
 
-    private String tableStudent = "ntt_students";
+    private final String tableStudent = "ntt_students";
 
-    private String tableCourse = "ntt_courses";
+    private final String tableCourse = "ntt_courses";
 
 
     public DataInitializer(JdbcTemplate jdbcTemplate, StudentRepository studentRepository, CourseRepository courseRepository) {
@@ -70,6 +70,7 @@ public class DataInitializer {
         String faculty = "Khoa CNTT";
         String major = "AI/ML";
         String typeOfTraining = "Research";
+        int yearOpening = 2025;
 
         if(countCourse == null || countCourse == 0) {
 //            {
@@ -91,6 +92,7 @@ public class DataInitializer {
             course.setFaculty(faculty);
             course.setMajor(major);
             course.setTypeOfTraining(typeOfTraining);
+            course.setYearOpening(yearOpening);
             courseRepository.save(course);
 
 

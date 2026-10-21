@@ -47,6 +47,19 @@ export class StudentService {
         return springConfigHeader.getAPIClientNoHeaders().post(path, data, springConfigHeader.getAuthorization());
     }
 
+    async getStudentInformationRequestByStudentId(studentId) {
+        let dataResponse = null;
+        try {
+            const path = `/student/information?studentId=${studentId}`;
+            dataResponse = await springConfigHeader.getAPIClientNoHeaders().get(path, springConfigHeader.getAuthorization());
+            console.log(dataResponse);
+        } catch(e) {
+            console.error(e);
+            alert(e);
+        }
+        return dataResponse;
+    }
+
 
     async getDataToAutoLoginAccessToken(tokenLogin) {
         let statusAutoLogin = false;
@@ -63,7 +76,7 @@ export class StudentService {
             // Instance đã có sẵn cả 'Authorization: Bearer <token>' và 'X-Client-Auth: Basic <base64>'
             // Tham số 2 của POST là Body (truyền {} nếu API không yêu cầu Body)
             let dataResponse = await springConfigHeader
-                .getAPIClientWithHeadersIsAccessToken(tokenLogin.getAccessToken())
+                .getAPIClientWithHeadersToken(tokenLogin.getAccessToken())
                 .get(pathAccessToken);
 
             if (dataResponse.status === 200) {
@@ -85,7 +98,7 @@ export class StudentService {
                 try {
                     // Gọi API Refresh Token - Truyền Refresh Token vào Instance!
                     let dataResponseRefreshToken = await springConfigHeader
-                        .getAPIClientWithHeadersIsAccessToken(tokenLogin.getRefreshToken())
+                        .getAPIClientWithHeadersToken(tokenLogin.getRefreshToken())
                         .get(pathRefreshToken);
 
                     if (dataResponseRefreshToken && dataResponseRefreshToken.status === 200) {
@@ -100,10 +113,11 @@ export class StudentService {
 
                         // 3. Retry gọi lại API cũ bằng Access Token MỚI
                         let retryResponse = await springConfigHeader
-                            .getAPIClientWithHeadersIsAccessToken(accessTokenNew)
+                            .getAPIClientWithHeadersToken(accessTokenNew)
                             .get(pathAccessToken);
 
                         if (retryResponse.status === 200) {
+                            //set lai ID moi
                             let studentId = retryResponse.data.data.studentId;
                             studentLocalStorage.setStudentIdToLocalStorage(Number(studentId));
                             statusAutoLogin = true;

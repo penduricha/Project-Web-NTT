@@ -7,6 +7,7 @@ import Footer from "../../components/footer/Footer.vue";
 import './card-account-nav/card-account-nav.scss';
 import '../../assets/main-scss/theme-color.scss';
 import CardAccountNav from "@/pages/information-page/card-account-nav/CardAccountNav.vue";
+import StudentRepository from "@/repository/StudentRepository.js";
 
 export default {
   name: "InformationPage",
@@ -19,7 +20,43 @@ export default {
 
   data() {
     return {
+      /*
+              {
+            "data": {
+                "studentId": 2500021775,
+                "gender": true,
+                "studentName": "Từ Quang Nhật",
+                "course": {
+                    "courseId": 8480201,
+                    "trainingSystem": "Master",
+                    "branch": "An Phu Dong ward, Ho Chi Minh city.",
+                    "industry": "CNTT",
+                    "faculty": "Khoa CNTT",
+                    "major": "AI/ML",
+                    "typeOfTraining": "Research",
+                    "yearOpening": 2025
+                },
+                "clazzName": "25MTH1B"
+            },
+            "message": "Student found successfully.",
+            "status": 200
+        }
+       */
 
+      //Student Info
+      studentId: null,
+      studentName: null,
+      gender: true,
+      trainingSystem: null,
+      clazzName: null,
+
+      //University
+      industry: null,
+      faculty: null,
+      branch: null,
+      typeOfTraining: null,
+      major: null,
+      yearOpening: null,
     }
   },
 
@@ -29,8 +66,9 @@ export default {
     );
   },
 
-  mounted() {
+  async mounted() {
     this.setTitlePage();
+    await this.fetchCourseInformation();
   },
 
   beforeDestroy() {
@@ -51,6 +89,22 @@ export default {
       const routerManagement = new RouterManagement();
       routerManagement.savePathToSessionStorage(route);
     },
+
+    async fetchCourseInformation() {
+      const studentRepository = new StudentRepository();
+      let studentFetched = await studentRepository.getStudentInformationByStudentId();
+      console.log("Student from API: ", studentFetched);
+      let courseStudent = studentFetched.course
+      if(courseStudent) {
+        this.yearOpening = courseStudent.yearOpening;
+        this.trainingSystem = courseStudent.trainingSystem;
+        this.industry = courseStudent.industry;
+        this.faculty = courseStudent.faculty;
+        this.typeOfTraining = courseStudent.typeOfTraining;
+        this.major = courseStudent.major;
+        this.branch = courseStudent.branch;
+      }
+    }
   },
 
   computed: {
@@ -67,16 +121,15 @@ export default {
       <h3 class="text-title-information">THÔNG TIN SINH VIÊN</h3>
       <div class="div-background-text-detail">
         <div class="div-text-detail-information">
-          <span class="text-detail-information">Khoá: <b>2025</b></span>
-          <span class="text-detail-information">Hệ đào tạo: <b>Đại học</b></span>
-          <span class="text-detail-information">Ngành: <b>Công nghệ thông tin</b></span>
-          <span class="text-detail-information">Khoa: <b>Công nghệ thông tin</b></span>
+<!--          <span class="text-detail-information">Năm: <b>{{yearOpening}}</b></span>-->
+          <span class="text-detail-information">Hệ đào tạo: <b>{{trainingSystem}}</b></span>
+          <span class="text-detail-information">Ngành: <b>{{industry}}</b></span>
+          <span class="text-detail-information">Khoa: <b>{{faculty}}</b></span>
         </div>
         <div class="div-text-detail-information div-text-detail-information-flex-responsive">
-          <span class="text-detail-information">Lớp: <b>25MTH1B</b></span>
-          <span class="text-detail-information">Loại hình đào tạo: <b>Nghiên cứu</b></span>
-          <span class="text-detail-information">Chuyên ngành: <b>Kĩ thuật phần mềm</b></span>
-          <span class="text-detail-information">Cơ sở: <b>An Phú Đông</b></span>
+          <span class="text-detail-information">Loại hình đào tạo: <b>{{typeOfTraining}}</b></span>
+          <span class="text-detail-information">Chuyên ngành: <b>{{major}}</b></span>
+          <span class="text-detail-information">Cơ sở: <b>{{branch}}</b></span>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/student")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class StudentManagementController {
+public class StudentControllerManagement {
 
     private final StudentServiceImpl studentService;
 
@@ -25,7 +25,7 @@ public class StudentManagementController {
     private JwtTokenProviderStudent jwtTokenProviderStudent;
 
 
-    public StudentManagementController(StudentServiceImpl studentService, StudentTokenServiceImpl studentTokenService) {
+    public StudentControllerManagement(StudentServiceImpl studentService, StudentTokenServiceImpl studentTokenService) {
         this.studentService = studentService;
         this.studentTokenService = studentTokenService;
     }
@@ -76,26 +76,34 @@ public class StudentManagementController {
         String accessToken = (String) studentRequestLogout.get("accessToken");
         String refreshToken = (String) studentRequestLogout.get("refreshToken");
 
-        if(accessToken == null || refreshToken == null) {
-            Map<String, Object> responseNoToken = new HashMap<>();
-            responseNoToken.put("status", 401);
-            responseNoToken.put("message", "No access token or refresh token provided.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseNoToken);
-        }
-
-        boolean status1 = studentTokenService.removeStudentAccessTokenByJwtToken(accessToken);
-        boolean status2 = studentTokenService.removeStudentRefreshTokenByJwtToken(refreshToken);
-
+//        if(accessToken == null || refreshToken == null) {
+//            Map<String, Object> responseNoToken = new HashMap<>();
+//            responseNoToken.put("status", 401);
+//            responseNoToken.put("message", "No access token or refresh token provided.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseNoToken);
+//        }
+        //        if(status1 && status2) {
+//            responseReturn.put("status", HttpStatus.OK.value());
+//            responseReturn.put("message", "Log out successfully.");
+//        } else {
+//            responseReturn.put("status", 401);
+//            responseReturn.put("message", "Can't remove access token or refresh token.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseReturn);
+//        }
         Map<String, Object> responseReturn = new HashMap<>();
 
-        if(status1 && status2) {
-            responseReturn.put("status", HttpStatus.OK.value());
-            responseReturn.put("message", "Log out successfully.");
-        } else {
+        try {
+            studentTokenService.removeStudentAccessTokenByJwtToken(accessToken);
+            studentTokenService.removeStudentRefreshTokenByJwtToken(refreshToken);
+        } catch(Exception e) {
+            System.out.println("Exception logout:"+ e.getMessage());
             responseReturn.put("status", 401);
             responseReturn.put("message", "Can't remove access token or refresh token.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseReturn);
         }
+
+        responseReturn.put("status", HttpStatus.OK.value());
+        responseReturn.put("message", "Log out successfully.");
         return ResponseEntity.ok(responseReturn);
     }
 
@@ -189,6 +197,7 @@ public class StudentManagementController {
         // 6. Trả về Response thành công (HTTP 200 OK)
         Map<String, Object> responseSuccess = new HashMap<>();
 
+        // Delete refresh token old and create 2 new tokens.
         if(studentTokenService.removeStudentRefreshTokenByJwtToken(jwtToken)) {
             Map<String, Object> tokenNew = studentTokenService.createTokenStudent(studentId);
             if(!tokenNew.isEmpty()) {

@@ -77,7 +77,35 @@ export default class StudentRepository {
             console.error(e);
             alert(e);
         }
-        return statusLogout
+        return statusLogout;
     }
 
+    async getStudentInformationByStudentId() {
+        let studentInfo = {};
+        let studentId = studentLocalStorage.getStudentIdToLocalStorage();
+        if(studentId) {
+            studentInfo = await studentService.getStudentInformationRequestByStudentId(studentId);
+            const varSessionStorageStudentInfo = 'studentInfoPage';
+            if(studentInfo.data.status === 200) {
+                console.log("Data fetched student information:", JSON.stringify(studentInfo.data.data));
+                //sessionStorage.setItem(varSessionStorageStudentInfo, JSON.stringify(studentInfo.data.data));
+            }
+            //sessionStorage.setItem(studentInfo, varSessionStorageStudentInfo);
+        }
+        return studentInfo.data.data;
+    }
+
+    // async getStudentInformationByStudentId_Student() {
+    //     let studentInfo_Student = {};
+    //     let studentInfo = await this.getStudentInformationByStudentId();
+    //     if(studentInfo) {
+    //         // const data = {
+    //         //     "studentId": studentAccount.getStudentId(),
+    //         //     "password": studentAccount.getPassword(),
+    //         // };
+    //         let { course, ...studentInfo } = studentInfo;
+    //         studentInfo_Student = studentInfo;
+    //     }
+    //     return studentInfo_Student;
+    // }
 }

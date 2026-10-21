@@ -44,15 +44,18 @@ function initApp(routes, targetPath) {
 }
 
 async function execute() {
-    const routerManagement = new RouterManagement()
     //const studentLocalStorage = new StudentLocalStorage()
-    const currentPath = window.location.pathname
-
     // const isLoggedIn = Boolean(
     //     routerManagement.getPath_From_LocalStorage() &&
     //     studentLocalStorage.getStudentId_From_LocalStorage() &&
     //     tokenLogin.getRefreshTokenFromStorage()
     // )
+
+    const routerManagement = new RouterManagement()
+
+    const currentPath = window.location.pathname
+
+    // Flag login auto
     let statusLoginAuto = false;
 
     let accessToken = tokenLogin.getAccessTokenFromStorage();
@@ -66,6 +69,7 @@ async function execute() {
 
     console.log("Status login auto:", statusLoginAuto);
 
+    //neu 2 token ko co thi remove het
     if(!accessToken || !refreshToken) {
         routerManagement.removePathFromLocalStorage();
     }
@@ -77,28 +81,26 @@ async function execute() {
     // Tìm route khớp với currentPath
     const matchedRoute = activeRouters.find(route => route.path === currentPath)
 
-    let targetPath = currentPath
+    let targetPath = currentPath;
 
     // 1. Kiểm tra nếu chưa đăng nhập và route có cờ allow === false (hoặc route không hợp lệ)
+    // 2. Nếu đã đăng nhập nhưng route không tồn tại trong danh sách
+    // 3. Nếu đang ở root '/'
+    // 4. Kiểm tra SessionStorage
     if (!statusLoginAuto && (matchedRoute?.allow === false || !matchedRoute)) {
         targetPath = '/login'
-    }
-    // 2. Nếu đã đăng nhập nhưng route không tồn tại trong danh sách
-    else if (!matchedRoute) {
+    } else if (!matchedRoute) {
         targetPath = '/404-not-found'
-    }
-    // 3. Nếu đang ở root '/'
-    else if (currentPath === '/') {
+    } else if (currentPath === '/') {
         targetPath = defaultPath
-    }
-    // 4. Kiểm traSessionStorage
-    else {
-        const pathSession = routerManagement.getPathFromSessionStorage()
+    } else {
+        const pathSession = routerManagement.getPathFromSessionStorage();
         if (pathSession && currentPath !== pathSession) {
-            targetPath = pathSession
+            targetPath = pathSession;
         }
     }
 
+    // Init path and routers
     initApp(activeRouters, targetPath)
 }
 

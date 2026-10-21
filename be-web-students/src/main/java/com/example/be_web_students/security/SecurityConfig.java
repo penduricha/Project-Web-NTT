@@ -65,6 +65,7 @@ public class SecurityConfig {
     }
 
 
+
     /* ===================================================================================
      * TRƯỜNG HỢP 2: RÀNG BUỘC SECURITY (PRODUCTION / SECURED)
      * - Bắt buộc phải có Authorization Header (Basic Auth / JWT)
@@ -131,5 +132,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }*/
+    }
+    */
 }
