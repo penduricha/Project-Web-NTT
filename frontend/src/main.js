@@ -51,9 +51,9 @@ async function execute() {
     //     tokenLogin.getRefreshTokenFromStorage()
     // )
 
-    const routerManagement = new RouterManagement()
+    const routerManagement = new RouterManagement();
 
-    const currentPath = window.location.pathname
+    const currentPath = window.location.pathname;
 
     // Flag login auto
     let statusLoginAuto = false;

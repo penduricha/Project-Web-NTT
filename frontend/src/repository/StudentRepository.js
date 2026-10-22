@@ -4,10 +4,13 @@ import {StudentService} from "@/services/spring/StudentService.js";
 
 import {TokenLogin} from "@/model/TokenLogin.js";
 import RouterManagement from "@/routers/RouterManagement.js";
+import {LoginService} from "@/services/spring/LoginService.js";
 
 const studentLocalStorage = new StudentLocalStorage();
 
 const studentService = new StudentService();
+
+const loginService = new LoginService();
 
 export default class StudentRepository {
     accessToken;
@@ -81,16 +84,17 @@ export default class StudentRepository {
     }
 
     async getStudentInformationByStudentId() {
+        // Flag login auto
         let studentInfo = {};
+
+        let statusLoginAuto = await loginService.getStatusAutoLogin();
+
         let studentId = studentLocalStorage.getStudentIdToLocalStorage();
-        if(studentId) {
+        if(studentId && statusLoginAuto) {
             studentInfo = await studentService.getStudentInformationRequestByStudentId(studentId);
-            const varSessionStorageStudentInfo = 'studentInfoPage';
             if(studentInfo.data.status === 200) {
                 console.log("Data fetched student information:", JSON.stringify(studentInfo.data.data));
-                //sessionStorage.setItem(varSessionStorageStudentInfo, JSON.stringify(studentInfo.data.data));
             }
-            //sessionStorage.setItem(studentInfo, varSessionStorageStudentInfo);
         }
         return studentInfo.data.data;
     }
